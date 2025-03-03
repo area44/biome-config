@@ -1,0 +1,20 @@
+{
+  "name": "@area44/biome-config",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "AREA44's Biome configuration",
+  "author": "AREA44 (https://github.com/AREA44)",
+  "license": "MIT",
+  "homepage": "https://github.com/AREA44/biome-config",
+  "keywords": ["biome-config"],
+  "scripts": {
+    "format": "biome format --write ."
+  },
+  "exports": {
+    "./biome": "./biome.json"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4"
+  },
+  "packageManager": "pnpm@10.5.2"
+}
