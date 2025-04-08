@@ -1,17 +1,17 @@
 {
   "files": {
     "ignore": [
-      "**/*.min.js",
       "**/*.min.css",
-      "**/dist/",
-      "**/out/",
+      "**/*.min.js",
       "**/node_modules/",
       "**/package-lock.json",
       "**/pnpm-lock.yaml",
       "**/yarn.lock",
+      "**/dist/",
+      "**/out/",
+      "**/.astro/",
       "**/.github/",
       "**/.netlify/",
-      "**/.astro/",
       "**/.next/"
     ]
   },
@@ -26,6 +26,7 @@
   },
   "organizeImports": { "enabled": true },
   "linter": { "enabled": true, "rules": { "recommended": true } },
+
   "javascript": {
     "formatter": {
       "jsxQuoteStyle": "double",
@@ -35,8 +36,20 @@
       "arrowParentheses": "always",
       "bracketSpacing": true,
       "bracketSameLine": false,
-      "quoteStyle": "double",
-      "attributePosition": "auto"
+      "quoteStyle": "double"
     }
-  }
+  },
+  "overrides": [
+    {
+      "include": ["*.svelte", "*.astro", "*.vue"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConst": "off",
+            "useImportType": "off"
+          }
+        }
+      }
+    }
+  ]
 }
