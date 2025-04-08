@@ -53,11 +53,7 @@
   },
   "overrides": [
     {
-      "include": [
-        "*.svelte",
-        "*.astro",
-        "*.vue"
-      ],
+      "include": ["*.svelte", "*.astro", "*.vue"],
       "linter": {
         "rules": {
           "style": {
