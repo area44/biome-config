@@ -1,4 +1,10 @@
 {
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
+  },
   "files": {
     "ignore": [
       "**/*.min.css",
@@ -24,9 +30,15 @@
     "lineWidth": 80,
     "attributePosition": "auto"
   },
-  "organizeImports": { "enabled": true },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
-
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  },
   "javascript": {
     "formatter": {
       "jsxQuoteStyle": "double",
@@ -41,7 +53,11 @@
   },
   "overrides": [
     {
-      "include": ["*.svelte", "*.astro", "*.vue"],
+      "include": [
+        "*.svelte",
+        "*.astro",
+        "*.vue"
+      ],
       "linter": {
         "rules": {
           "style": {
