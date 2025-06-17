@@ -1,12 +1,15 @@
 {
   "name": "@area44/biome-config",
   "type": "module",
-  "version": "0.4.1",
+  "version": "2.0.0",
   "description": "AREA44's Biome configuration",
   "author": "AREA44 (https://github.com/AREA44)",
   "license": "MIT",
   "homepage": "https://github.com/AREA44/biome-config",
-  "keywords": ["biome-config"],
+  "keywords": [
+    "biome",
+    "biome-config"
+  ],
   "scripts": {
     "check": "biome check --write .",
     "lint": "biome lint --write .",
@@ -15,9 +18,11 @@
   "exports": {
     "./biome": "./biome.jsonc"
   },
-  "files": ["biome.jsonc"],
+  "files": [
+    "biome.jsonc"
+  ],
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4"
+    "@biomejs/biome": "^2.0.0"
   },
   "packageManager": "pnpm@10.12.1"
 }
