@@ -18,7 +18,7 @@ To apply the configuration, update your `biome.json` file as follows:
 }
 ```
 
-For more details on configuring Biome, refer to the official guide [Biome Configuration Guide](https://biomejs.dev/guides/configure-biome/#share-a-configuration-file).
+For more details on configuring Biome, refer to the official guide [Biome Configuration Guide](https://biomejs.dev/guides/configure-biome/#sharing-a-configuration-file).
 
 ## License
 
