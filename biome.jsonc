@@ -52,7 +52,8 @@
         "noUnusedTemplateLiteral": "error",
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
-        "noUselessElse": "error"
+        "noUselessElse": "error",
+        "useImportType": "off"
       }
     }
   },
@@ -75,12 +76,12 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
+      "includes": ["**/*.astro"],
       "linter": {
         "rules": {
-          "style": {
-            "useConst": "off",
-            "useImportType": "off"
+          "correctness": {
+            "noUnusedImports": "off",
+            "noUnusedVariables": "off"
           }
         }
       }
