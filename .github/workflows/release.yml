@@ -2,23 +2,41 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
 
 jobs:
   release:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node & PNPM
+        uses: pnpm/action-setup@v4
         with:
-          node-version: lts/*
+          version: 10
 
-      - run: npx changelogithub
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Version packages
+        uses: changesets/action@v1
+        with:
+          version: true
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish packages
+        uses: changesets/action@v1
+        with:
+          publish: pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
