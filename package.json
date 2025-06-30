@@ -19,6 +19,10 @@
     "linter",
     "formatter"
   ],
+  "main": "./biome.jsonc",
+  "files": [
+    "biome.jsonc"
+  ],
   "scripts": {
     "check": "biome check --write .",
     "lint": "biome lint --write .",
@@ -27,10 +31,6 @@
     "version": "changeset version",
     "publish": "changeset publish"
   },
-  "main": "./biome.jsonc",
-  "files": [
-    "biome.jsonc"
-  ],
   "devDependencies": {
     "@biomejs/biome": "^2.0.6",
     "@changesets/cli": "^2.29.5",
