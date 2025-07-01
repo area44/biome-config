@@ -19,10 +19,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node & PNPM
+      - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
           version: 10
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
@@ -33,6 +39,11 @@ jobs:
           version: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up .npmrc for publishing
+        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish packages
         uses: changesets/action@v1
