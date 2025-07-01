@@ -38,9 +38,6 @@
     "@changesets/cli": "^2.29.5",
     "ultracite": "5.0.26"
   },
-  "peerDependencies": {
-    "@biomejs/biome": "^2.0.6"
-  },
   "engines": {
     "node": ">=22"
   }
