@@ -36,8 +36,8 @@ jobs:
       - name: Version packages
         uses: changesets/action@v1
         with:
-          version: pnpm version
-          publish: pnpm exec changeset publish
+          version: true
+          publish: true
           commit: "[ci] release"
           title: "[ci] release"
         env:
