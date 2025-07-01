@@ -2,4 +2,4 @@
 "@area44/biome-config": patch
 ---
 
-v2.1.1
+Add changeset for schema update and removal of peerDependencies in package.json
