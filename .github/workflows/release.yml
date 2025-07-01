@@ -36,19 +36,10 @@ jobs:
       - name: Version packages
         uses: changesets/action@v1
         with:
-          version: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up .npmrc for publishing
-        run: echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish packages
-        uses: changesets/action@v1
-        with:
-          publish: pnpm publish --no-git-checks
+          version: pnpm version
+          publish: pnpm exec changeset publish
+          commit: "[ci] release"
+          title: "[ci] release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
