@@ -19,7 +19,9 @@
     "linter",
     "formatter"
   ],
-  "main": "./biome.jsonc",
+  "exports": {
+    ".": "./biome.jsonc"
+  },
   "files": [
     "biome.jsonc"
   ],
