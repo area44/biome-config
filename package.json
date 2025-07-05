@@ -28,10 +28,7 @@
   "scripts": {
     "check": "biome check --write .",
     "lint": "biome lint --write .",
-    "format": "biome format --write .",
-    "changeset": "changeset",
-    "version": "changeset version",
-    "publish": "changeset publish"
+    "format": "biome format --write ."
   },
   "dependencies": {
     "ultracite": "5.0.32"
