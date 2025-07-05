@@ -34,8 +34,7 @@
     "ultracite": "5.0.32"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.6",
-    "@changesets/cli": "^2.29.5"
+    "@biomejs/biome": "^2.0.6"
   },
   "engines": {
     "node": ">=22"
