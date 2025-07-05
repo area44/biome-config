@@ -20,7 +20,7 @@
     "formatter"
   ],
   "exports": {
-    ".": "./biome.jsonc"
+    "./biome": "./biome.jsonc"
   },
   "files": [
     "biome.jsonc"
