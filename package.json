@@ -30,9 +30,6 @@
     "lint": "biome lint --write .",
     "format": "biome format --write ."
   },
-  "dependencies": {
-    "ultracite": "5.0.32"
-  },
   "devDependencies": {
     "@biomejs/biome": "^2.0.6"
   },
