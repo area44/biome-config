@@ -30,8 +30,7 @@
     "actions": {
       "source": {
         "organizeImports": "on",
-        "useSortedAttributes": "on",
-        "useSortedKeys": "off"
+        "useSortedAttributes": "on"
       }
     }
   },
@@ -67,25 +66,14 @@
   },
   "css": {
     "formatter": {
-      "lineEnding": "lf",
-      "lineWidth": 80,
       "quoteStyle": "double"
     },
     "parser": {
-      "allowWrongLineComments": false,
-      "cssModules": false
+      "allowWrongLineComments": false
     }
   },
   "json": {
-    "assist": {
-      "enabled": false
-    },
     "formatter": {
-      "enabled": true,
-      "indentStyle": "space",
-      "indentWidth": 2,
-      "lineEnding": "lf",
-      "lineWidth": 80,
       "trailingCommas": "none"
     },
     "parser": {
