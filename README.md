@@ -18,8 +18,6 @@ To apply the configuration, update your `biome.json` file as follows:
 }
 ```
 
-For more details on configuring Biome, refer to the official guide [Biome Configuration Guide](https://biomejs.dev/guides/configure-biome/#sharing-a-configuration-file).
-
 ## License
 
-Released under the [MIT License](./LICENSE) &copy; 2025-PRESENT [AREA44](https://github.com/AREA44).
+Released under the [MIT License](./LICENSE) &copy; 2025-PRESENT [AREA44](https://github.com/area44).
