@@ -1,3 +1,4 @@
 {
-  "extends": ["github>area44/renovate-config"]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>area44/renovate-config", "customManagers:biomeVersions"]
 }
