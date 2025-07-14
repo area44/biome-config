@@ -30,8 +30,7 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on",
-        "useSortedAttributes": "on"
+        "organizeImports": "on"
       }
     }
   },
@@ -40,6 +39,7 @@
     "rules": {
       "recommended": true,
       "style": {
+        "noNonNullAssertion": "off",
         "noParameterAssign": "error",
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
@@ -49,9 +49,13 @@
         "noUnusedTemplateLiteral": "error",
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
-        "noUselessElse": "error",
-        "useImportType": "off"
+        "noUselessElse": "error"
       }
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true
     }
   },
   "javascript": {
@@ -60,41 +64,23 @@
       "bracketSameLine": false,
       "jsxQuoteStyle": "double",
       "quoteProperties": "asNeeded",
-      "quoteStyle": "single",
+      "quoteStyle": "double",
       "semicolons": "always",
       "trailingCommas": "es5"
     }
   },
-  "css": {
-    "formatter": {
-      "quoteStyle": "double"
-    },
-    "parser": {
-      "allowWrongLineComments": false
-    }
-  },
-  "json": {
-    "formatter": {
-      "trailingCommas": "none"
-    },
-    "parser": {
-      "allowComments": false,
-      "allowTrailingCommas": false
-    }
-  },
-  "html": {
-    "formatter": {
-      "enabled": true
-    }
-  },
   "overrides": [
     {
-      "includes": ["**/*.astro"],
+      "includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
       "linter": {
         "rules": {
+          "style": {
+            "useConst": "off",
+            "useImportType": "off"
+          },
           "correctness": {
-            "noUnusedImports": "off",
-            "noUnusedVariables": "off"
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
           }
         }
       }
