@@ -17,6 +17,16 @@
       "!**/.next/"
     ]
   },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "attributePosition": "auto",
+    "bracketSpacing": true
+  },
   "assist": {
     "actions": {
       "source": {
@@ -46,6 +56,17 @@
   "html": {
     "formatter": {
       "enabled": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "trailingCommas": "es5"
     }
   },
   "overrides": [
