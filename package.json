@@ -1,6 +1,6 @@
 {
   "name": "@area44/biome-config",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "AREA44's Biome configuration",
   "author": "AREA44 (https://github.com/area44)",
   "license": "MIT",
@@ -30,8 +30,5 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.1"
-  },
-  "engines": {
-    "node": ">=22.17.0"
   }
 }
