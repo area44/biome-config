@@ -1,6 +1,6 @@
 {
   "name": "@area44/biome-config",
-  "version": "2.2.5",
+  "version": "2.2.6",
   "description": "AREA44's Biome configuration",
   "author": "AREA44 (https://github.com/area44)",
   "license": "MIT",
@@ -24,9 +24,9 @@
   ],
   "main": "./biome.jsonc",
   "scripts": {
-    "check": "biome check --write .",
-    "lint": "biome lint --write .",
-    "format": "biome format --write ."
+    "check": "biome check --write",
+    "lint": "biome lint --write",
+    "format": "biome format --write"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4"
