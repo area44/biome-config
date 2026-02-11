@@ -14,7 +14,7 @@ To apply the configuration, update your `biome.json` file as follows:
 
 ```json
 {
-  "extends": ["@area44/biome-config/biome"]
+  "extends": ["@area44/biome-config"]
 }
 ```
 
