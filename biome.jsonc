@@ -12,7 +12,8 @@
       "!**/.astro",
       "!**/.github",
       "!**/.netlify",
-      "!**/.next"
+      "!**/.next",
+      "!**/tests/invalid"
     ]
   },
   "vcs": {
@@ -80,6 +81,16 @@
           "correctness": {
             "noUnusedVariables": "off",
             "noUnusedImports": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["tests/invalid/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
           }
         }
       }
