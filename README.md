@@ -2,7 +2,7 @@
 
 ## Installation
 
-You can install `@area44/biome-config` follows:  
+You can install `@area44/biome-config` follows:
 
 ```sh
 pnpm i -D @area44/biome-config
