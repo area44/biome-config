@@ -24,12 +24,12 @@
   ],
   "main": "./biome.jsonc",
   "scripts": {
-    "check": "biome check --write",
+    "check": "biome ci .",
     "lint": "biome lint --write",
     "format": "biome format --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.3"
+    "@biomejs/biome": "^2.6.4"
   },
   "packageManager": "pnpm@12.16.1"
 }
