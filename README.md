@@ -18,12 +18,6 @@ pnpm add -D @area44/biome-config
 npm install --save-dev @area44/biome-config
 ```
 
-### yarn
-
-```sh
-yarn add -D @area44/biome-config
-```
-
 ### bun
 
 ```sh
@@ -46,15 +40,11 @@ This package targets `@biomejs/biome` **^2.6.4**.
 
 ## Contributing & Releases
 
-### Conventional Commits
-
-This repository enforces [Conventional Commits](https://www.conventionalcommits.org/). All commits merged to `main` must follow this format (e.g., `feat: ...`, `fix: ...`, `chore: ...`) to enable automated versioning.
-
 ### Automated Release Lifecycle
 
 Releases are fully automated using [Release Please](https://github.com/googleapis/release-please-action):
 
-1. **Pull Requests**: Changes are merged into `main` using Conventional Commit messages.
+1. **Pull Requests**: Changes are merged into `main`.
 2. **Release PR**: Release Please automatically maintains a Release PR that increments the package version in `package.json` and updates `CHANGELOG.md` according to Semantic Versioning.
 3. **Release & Publish**: When the Release PR is merged to `main`:
    - A GitHub Release and Git tag (e.g. `vX.Y.Z`) are created.
