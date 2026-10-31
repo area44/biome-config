@@ -25,7 +25,8 @@ The repository is intentionally minimal and publishes configuration assets direc
 - `biome.jsonc`: Primary Biome configuration file containing schema references, file inclusion/exclusion rules, formatter settings, linter rules, and framework overrides (Svelte, Astro, Vue).
 - `package.json`: Defines package metadata, npm distribution entry (`main: "./biome.jsonc"`), exported files, script definitions, and package manager specifications.
 - `pnpm-lock.yaml`: Dependency lockfile ensuring reproducible installations.
-- `.github/workflows/ci.yml`: Unified workflow covering CI check gates, automated release proposals via Release Please, and npm publishing via OIDC Trusted Publishing.
+- `.github/workflows/ci.yml`: Continuous integration workflow for validating pull requests.
+- `.github/workflows/release.yml`: Release and publishing workflow for validating pushes to `main`, running Release Please, and publishing to npm.
 - `.github/workflows/autofix.yml`: Automated formatting and lint fixing workflow.
 - `README.md`: Concise, user-facing documentation detailing installation and consumption instructions.
 
@@ -90,28 +91,32 @@ If conflicting configurations are encountered across these sources, investigate 
 ### Continuous Integration (CI)
 
 - Handled by `.github/workflows/ci.yml`.
-- The `check` job serves as the shared validation gate, executing `pnpm run check` on all pull requests and pushes to `main`.
-- Validation runs exactly once per workflow trigger.
+- Triggers on `pull_request` events only.
+- Serves as the validation gate for proposed changes prior to merging, executing `pnpm run check` once per PR workflow run.
 
 ### Release
 
-- The `release` job runs only on pushes to `main` following successful completion of `check`.
-- Managed by `release-please-action` using Conventional Commit history to create release pull requests, determine semver bumps, generate changelogs, and tag releases.
+- Handled by `.github/workflows/release.yml`.
+- Triggers on pushes to `main` only.
+- The `release` job runs `pnpm run check` as the validation gate before executing Release Please.
+- Release Please uses Conventional Commit history to create or update release pull requests, determine semver bumps, generate changelogs, and tag releases.
 - Commits should follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.).
 
 ### Publishing
 
-- The `publish` job runs only after `release` succeeds and outputs `release_created == 'true'`.
+- Handled by the `publish` job within `.github/workflows/release.yml`.
+- Runs only after `release` succeeds and outputs `release_created == 'true'`.
 - Checks out the generated release tag and publishes using npm Trusted Publishing (OIDC) with provenance:
 
   ```sh
   npm publish --provenance --access public
   ```
+- Does not repeat validation or install project dependencies.
 - No persistent npm authentication tokens are used or needed.
-- On npmjs.com, the Trusted Publisher configuration for `@area44/biome-config` points to `.github/workflows/ci.yml`.
+- On npmjs.com, the Trusted Publisher configuration for `@area44/biome-config` points to `.github/workflows/release.yml`.
 
 ### Failure Handling
 
-- Inspect job logs in GitHub Actions to pinpoint whether an issue occurred in `check`, `release`, or `publish`.
-- Because jobs are separated with clear dependencies, failed publish jobs can be retried independently without re-running validation or release generation if release tags have already been created.
+- Inspect job logs in GitHub Actions to pinpoint whether an issue occurred during PR validation, main validation, release creation, or publishing.
+- In `release.yml`, the `publish` job depends on `release`. If publishing fails after release creation, the `publish` job can be retried independently without re-running validation or release generation.
 - Never duplicate a release or publish step without first checking the remote state.
