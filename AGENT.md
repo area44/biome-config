@@ -99,8 +99,8 @@ If conflicting configurations are encountered across these sources, investigate 
 - Handled by `.github/workflows/release.yml`.
 - Triggers on pushes to `main` only.
 - The `release` job runs `pnpm run check` as the validation gate before executing Release Please.
-- Release Please uses Conventional Commit history to create or update release pull requests, determine semver bumps, generate changelogs, and tag releases.
-- Commits should follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.).
+- Release Please relies on Conventional Commits to determine release versions, generate changelogs, and create or update release pull requests.
+- The repository does not currently enforce Conventional Commit formatting through CI or commit hooks; agents should follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) when creating commits intended to participate in the automated release process.
 
 ### Publishing
 
