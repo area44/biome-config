@@ -1,16 +1,32 @@
 # @area44/biome-config
 
+Shared Biome configuration for AREA44 projects.
+
 ## Installation
 
-You can install `@area44/biome-config` follows:
+Install `@area44/biome-config` as a development dependency:
+
+### pnpm
 
 ```sh
-pnpm i -D @area44/biome-config
+pnpm add -D @area44/biome-config
 ```
 
-## Configuration
+### npm
 
-To apply the configuration, update your `biome.json` file as follows:
+```sh
+npm install --save-dev @area44/biome-config
+```
+
+### Bun
+
+```sh
+bun add -d @area44/biome-config
+```
+
+## Usage
+
+Extend `@area44/biome-config` in your project's `biome.json` or `biome.jsonc`:
 
 ```json
 {
