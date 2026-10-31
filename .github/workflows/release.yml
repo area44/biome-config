@@ -48,16 +48,11 @@ jobs:
         with:
           ref: ${{ needs.release.outputs.tag_name }}
 
-      - name: Setup pnpm and Node.js
-        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          runtime: node@26.13.0
-          install: true
-          require-lockfile: true
-          cache: true
-
-      - name: Validate release commit
-        run: pnpm run check
+          node-version: 26.13.0
+          package-manager-cache: false
 
       - name: Publish to npm
         run: npm publish --provenance --access public
