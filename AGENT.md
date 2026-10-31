@@ -44,17 +44,12 @@ Practical reference for contributors and coding agents working on `@area44/biome
 
 - Automated releases and PRs are managed by [Release Please](https://github.com/googleapis/release-please-action) in `.github/workflows/release.yml`.
 - Conventional Commit Note: Release Please uses Conventional Commit messages to infer version bumps (major, minor, patch) and generate release notes. The repository does not enforce Conventional Commit formatting through CI or commit hooks; however, commits not following Conventional Commits may not produce the intended release behavior.
-- Triggers: Pushes to `main` and GitHub `release` events (`types: [published]`).
-- Top-level workflow permissions must remain:
-
-  ```yaml
-  permissions:
-    contents: write
-    pull-requests: write
-    id-token: write
-  ```
+- Triggers: Pushes to `main`.
+- Jobs:
+  - `release`: Runs Release Please with permissions `contents: write`, `pull-requests: write`. Outputs `release_created` and `tag_name`.
+  - `publish`: Runs only when Release Please creates a release (`release_created == 'true'`) with permissions `contents: read`, `id-token: write`. Checks out the release tag, runs `pnpm run check`, and executes `npm publish --provenance --access public`.
+- Retries: If publishing fails after release creation, the `publish` job can be rerun independently from the original workflow run in GitHub Actions.
 - Package publishing uses npm Trusted Publishing (OIDC) with provenance (`npm publish --provenance --access public`).
-- Idempotency & Retries: The publish job checks whether the version is already published on npm (`npm view`). If a GitHub Release exists or is re-published after a failed npm publish, re-running the workflow safely publishes without requiring another version bump or causing duplicate publish failures.
 - npm Trusted Publisher configuration parameters on npmjs.com:
   - **npm package name**: `@area44/biome-config`
   - **Provider**: `GitHub Actions`

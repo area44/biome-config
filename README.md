@@ -34,10 +34,6 @@ Extend `@area44/biome-config` in your project's `biome.json` or `biome.jsonc`:
 }
 ```
 
-### Supported Biome Version
-
-This package targets `@biomejs/biome` **^2.6.4**.
-
 ## License
 
 Released under the [MIT License](./LICENSE) &copy; 2025-PRESENT [AREA44](https://github.com/area44).
