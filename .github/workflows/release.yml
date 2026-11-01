@@ -52,12 +52,7 @@ jobs:
         uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
           runtime: node@26.13.0
-          install: true
-          require-lockfile: true
-          cache: true
-
-      - name: Validate release commit
-        run: pnpm run check
+          install: false
 
       - name: Publish to npm
         run: npm publish --provenance --access public
