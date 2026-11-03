@@ -24,3 +24,6 @@ jobs:
 
       - name: Check
         run: pnpm run check
+
+      - name: Run Package Integration Tests
+        run: pnpm test
