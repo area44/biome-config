@@ -52,7 +52,14 @@ Biome 2.6+ manifest distribution packages require consumers to specify a named c
 Biome manifests must select a named configuration with the configs/ subpath.
 ```
 
-In `package.json`, Node.js conditional exports expose `./biome-manifest.json` under the official `"biome"` condition while providing `"default": "./configs/recommended.json"` for Node.js resolution.
+In `package.json`, package exports expose `./biome-manifest.json` strictly under the official `"biome"` condition (`"exports": { "biome": "./biome-manifest.json" }`).
+
+### Excluded Directories
+
+The configuration automatically excludes build artifacts and sensitive metadata directories from processing:
+- Build output / generated directories: `dist`, `build`, `out`, `public`, `.astro`, `.next`, `.netlify`
+- Minified files and source maps: `!**/*.min.*`, `!**/*.map`
+- Automation and GitHub workflows: `!**/.github`, `!**/.github/**` (all `.github` contents are completely excluded from Biome formatting and linting).
 
 ### Schema Configuration Guidance
 

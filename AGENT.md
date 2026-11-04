@@ -16,8 +16,8 @@ Instead of duplicating Biome linting and formatting rules across multiple reposi
 - `configs/recommended.json`: Recommended Biome configuration ruleset without an unpinned or version-locked `$schema` reference.
 - Package exports mapped in `package.json`:
   - `"biome"`: Resolves `./biome-manifest.json` for Biome 2.6+ manifest-based resolution.
-  - `"default"`: Resolves `./configs/recommended.json` as a Node.js fallback entry point.
 - Consumers extend the package using `@area44/biome-config/configs/recommended`. Biome manifests require selecting a named configuration under the `configs/` subpath.
+- The `.github/` directory is excluded from Biome formatting and linting.
 
 ### Scope Boundaries
 
@@ -47,7 +47,7 @@ biome-config/
 - `configs/recommended.json`: Primary configuration file with file inclusions/exclusions, formatter settings, linter rules, and framework overrides (Svelte, Astro, Vue). The distributed configuration deliberately omits `$schema` to remain fully portable across consumer Biome versions.
 - `biome.json`: Repository configuration extending `./configs/recommended.json` with an explicit `$schema` matching the installed developer Biome version for contributor editor validation.
 - `tests/integration.test.mjs`: Automated integration test suite running on Vitest (`vitest run`), validating real package artifacts (`pnpm pack`) against isolated consumer projects across supported Biome versions (`2.6.2` minimum and `2.6.4` current).
-- `package.json`: Package metadata, export conditions (`biome` and `default`), file packaging list, peer dependencies (`@biomejs/biome: ">=2.6.2 <3"`), and script definitions.
+- `package.json`: Package metadata, export condition (`biome`), file packaging list, peer dependencies (`@biomejs/biome: ">=2.6.2 <3"`), and script definitions.
 - `.github/workflows/ci.yml`: Continuous integration workflow validating pull requests with both lint/formatting checks and consumer integration tests.
 - `.github/workflows/release.yml`: Release and publishing workflow validating pushes to `main`, running Release Please, and publishing to npm.
 - `.github/workflows/autofix.yml`: Automated formatting and lint fixing workflow with job-level permissions.

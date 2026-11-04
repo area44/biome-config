@@ -47,50 +47,60 @@ describe("Biome package integration & compatibility matrix", () => {
     }
   });
 
-  it("validates Node.js package resolution compliance and exports conditions", () => {
-    const nodeTestDir = path.join(tmpRoot, "consumer-node-resolve");
-    fs.mkdirSync(nodeTestDir, { recursive: true });
-    fs.writeFileSync(
-      path.join(nodeTestDir, "package.json"),
-      JSON.stringify({ name: "consumer-node-resolve", private: true }, null, 2)
-    );
-    execFileSync("pnpm", ["add", tarballPath], {
-      cwd: nodeTestDir,
-      encoding: "utf8",
-    });
+  describe("Package exports and tarball metadata", () => {
+    let nodeTestDir;
 
-    // 1. Verify exports in installed package.json
-    const installedPkg = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          nodeTestDir,
-          "node_modules",
-          "@area44",
-          "biome-config",
-          "package.json"
-        ),
-        "utf8"
-      )
-    );
-    expect(installedPkg.exports).toEqual({
-      biome: "./biome-manifest.json",
-      default: "./configs/recommended.json",
-    });
+    beforeAll(() => {
+      nodeTestDir = path.join(tmpRoot, "consumer-node-resolve");
+      fs.mkdirSync(nodeTestDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(nodeTestDir, "package.json"),
+        JSON.stringify(
+          { name: "consumer-node-resolve", private: true },
+          null,
+          2
+        )
+      );
+      execFileSync("pnpm", ["add", tarballPath], {
+        cwd: nodeTestDir,
+        encoding: "utf8",
+      });
+    }, 60_000);
 
-    // 2. ESM import check using "default" condition
-    fs.writeFileSync(
-      path.join(nodeTestDir, "test.mjs"),
-      [
-        'import rootConfig from "@area44/biome-config" with { type: "json" };',
-        "if (!rootConfig.formatter) process.exit(1);",
-      ].join("\n")
-    );
+    it("exposes the Biome manifest through the official 'biome' export condition", () => {
+      const installedPkg = JSON.parse(
+        fs.readFileSync(
+          path.join(
+            nodeTestDir,
+            "node_modules",
+            "@area44",
+            "biome-config",
+            "package.json"
+          ),
+          "utf8"
+        )
+      );
+      expect(installedPkg.exports).toEqual({
+        biome: "./biome-manifest.json",
+      });
 
-    const esmResult = spawnSync("node", ["test.mjs"], {
-      cwd: nodeTestDir,
-      encoding: "utf8",
+      const installedManifest = JSON.parse(
+        fs.readFileSync(
+          path.join(
+            nodeTestDir,
+            "node_modules",
+            "@area44",
+            "biome-config",
+            "biome-manifest.json"
+          ),
+          "utf8"
+        )
+      );
+      expect(installedManifest.version).toBe(1);
+      expect(installedManifest.configs).toEqual([
+        { recommended: "./configs/recommended.json" },
+      ]);
     });
-    expect(esmResult.status).toBe(0);
   });
 
   for (const biomeVersion of supportedBiomeVersions) {
@@ -181,6 +191,24 @@ describe("Biome package integration & compatibility matrix", () => {
         );
 
         runBiome(["format", "--write", "."]);
+        const output = runBiome(["ci", "."]);
+        expect(output).toMatch(/Checked 3 files/);
+      });
+
+      it("excludes .github/ directory and nested files from Biome checks", () => {
+        const githubWorkflowsDir = path.join(
+          consumerDir,
+          ".github",
+          "workflows"
+        );
+        fs.mkdirSync(githubWorkflowsDir, { recursive: true });
+        // Place an unformatted YAML file with irregular spacing
+        fs.writeFileSync(
+          path.join(githubWorkflowsDir, "ci.yml"),
+          "name:   CI\non:   push\njobs:\n  test:\n    runs-on:   ubuntu-latest\n"
+        );
+
+        // Biome should still report exactly 3 checked files (biome.json, index.js, package.json), completely skipping .github/
         const output = runBiome(["ci", "."]);
         expect(output).toMatch(/Checked 3 files/);
       });

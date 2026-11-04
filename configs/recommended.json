@@ -9,6 +9,8 @@
       "!**/dist",
       "!**/out",
       "!**/.astro",
+      "!**/.github",
+      "!**/.github/**",
       "!**/.netlify",
       "!**/.next"
     ]
