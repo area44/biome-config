@@ -4,18 +4,7 @@ Shared Biome configuration for AREA44 projects.
 
 ## Overview
 
-`@area44/biome-config` distributes an opinionated, comprehensive Biome configuration using Biome 2.6+'s configuration manifest architecture (`biome-manifest.json`).
-
-### Configuration Philosophy
-
-- **Modular internally, unified externally**: Internally, configuration modules are decoupled by concern (`configs/base/`) and language (`configs/languages/`), composed cleanly through `configs/recommended.json`. Externally, consumers extend a single unified entry point.
-- **Opinionated defaults**: Inspired by Ultracite, prioritizing correctness, error-first linting, type safety, performance, and accessibility.
-- **Experimental features enabled by default**: Features like HTML super-language support (Vue, Svelte, Astro), embedded CSS/GraphQL snippet formatting, and markdown embed analysis are enabled natively where supported.
-
-### Supported Biome Versions
-
-- Biome **v2.6.2** and later (`>=2.6.2 <3`).
-- Tested across `@biomejs/biome@2.6.2` (minimum supported version introducing configuration manifest distribution) and `@biomejs/biome@2.6.4` (current).
+`@area44/biome-config` distributes shared Biome rules and formatting presets using Biome's configuration manifest architecture (`biome-manifest.json`).
 
 ## Installation
 
