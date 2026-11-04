@@ -13,24 +13,24 @@ Shared Biome configuration for AREA44 projects.
 
 ## Installation
 
-Install `@area44/biome-config` as a development dependency along with a compatible `@biomejs/biome` version:
+Install `@area44/biome-config` as a development dependency along with `@biomejs/biome`:
 
 ### pnpm
 
 ```sh
-pnpm add -D @area44/biome-config "@biomejs/biome@>=2.6.2 <3"
+pnpm add -D @area44/biome-config @biomejs/biome
 ```
 
 ### npm
 
 ```sh
-npm install --save-dev @area44/biome-config "@biomejs/biome@>=2.6.2 <3"
+npm install --save-dev @area44/biome-config @biomejs/biome
 ```
 
 ### Bun
 
 ```sh
-bun add -d @area44/biome-config "@biomejs/biome@>=2.6.2 <3"
+bun add -d @area44/biome-config @biomejs/biome
 ```
 
 ## Usage
