@@ -17,7 +17,7 @@ describe("Biome package integration & compatibility matrix", () => {
     packDir = path.join(tmpRoot, "pack");
     fs.mkdirSync(packDir, { recursive: true });
 
-    // Step 1: Pack the package using pnpm pack
+    // Pack the package using pnpm pack
     execFileSync("pnpm", ["pack", "--pack-destination", packDir], {
       cwd: repoRoot,
       encoding: "utf8",
@@ -35,6 +35,49 @@ describe("Biome package integration & compatibility matrix", () => {
     if (tmpRoot && fs.existsSync(tmpRoot)) {
       fs.rmSync(tmpRoot, { recursive: true, force: true });
     }
+  });
+
+  it("validates Node.js package resolution compliance for both supported paths", () => {
+    const nodeTestDir = path.join(tmpRoot, "consumer-node-resolve");
+    fs.mkdirSync(nodeTestDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(nodeTestDir, "package.json"),
+      JSON.stringify({ name: "consumer-node-resolve", private: true }, null, 2)
+    );
+    execFileSync("pnpm", ["add", tarballPath], {
+      cwd: nodeTestDir,
+      encoding: "utf8",
+    });
+
+    // 1. CommonJS resolution check
+    const rootPath = require.resolve("@area44/biome-config", {
+      paths: [nodeTestDir],
+    });
+    const subpath = require.resolve(
+      "@area44/biome-config/configs/recommended",
+      {
+        paths: [nodeTestDir],
+      }
+    );
+    expect(fs.existsSync(rootPath)).toBe(true);
+    expect(fs.existsSync(subpath)).toBe(true);
+    expect(rootPath).toBe(subpath);
+
+    // 2. ESM import check
+    fs.writeFileSync(
+      path.join(nodeTestDir, "test.mjs"),
+      [
+        'import rootConfig from "@area44/biome-config" with { type: "json" };',
+        'import subpathConfig from "@area44/biome-config/configs/recommended" with { type: "json" };',
+        "if (!rootConfig.formatter || !subpathConfig.formatter) process.exit(1);",
+      ].join("\n")
+    );
+
+    const esmResult = spawnSync("node", ["test.mjs"], {
+      cwd: nodeTestDir,
+      encoding: "utf8",
+    });
+    expect(esmResult.status).toBe(0);
   });
 
   for (const biomeVersion of supportedBiomeVersions) {
@@ -61,7 +104,7 @@ describe("Biome package integration & compatibility matrix", () => {
             2
           )
         );
-        // Exclude node_modules and pnpm-lock.yaml (Biome 2.6.2 did not auto-protect pnpm-lock.yaml)
+        // Exclude node_modules and pnpm-lock.yaml from checking
         fs.writeFileSync(
           path.join(consumerDir, ".gitignore"),
           "node_modules/\npnpm-lock.yaml\n"
@@ -112,12 +155,12 @@ describe("Biome package integration & compatibility matrix", () => {
         return combinedOutput;
       }
 
-      it("resolves modern manifest-based configuration (@area44/biome-config/configs/recommended)", () => {
+      it("resolves root configuration path (@area44/biome-config)", () => {
         fs.writeFileSync(
           path.join(consumerDir, "biome.json"),
           JSON.stringify(
             {
-              extends: ["@area44/biome-config/configs/recommended"],
+              extends: ["@area44/biome-config"],
             },
             null,
             2
@@ -129,12 +172,12 @@ describe("Biome package integration & compatibility matrix", () => {
         expect(output).toMatch(/Checked 3 files/);
       });
 
-      it("resolves backward compatibility legacy configuration (@area44/biome-config)", () => {
+      it("resolves explicit recommended subpath (@area44/biome-config/configs/recommended)", () => {
         fs.writeFileSync(
           path.join(consumerDir, "biome.json"),
           JSON.stringify(
             {
-              extends: ["@area44/biome-config"],
+              extends: ["@area44/biome-config/configs/recommended"],
             },
             null,
             2

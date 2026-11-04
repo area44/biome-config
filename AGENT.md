@@ -14,9 +14,9 @@ Instead of duplicating Biome linting and formatting rules across multiple reposi
 
 - `biome-manifest.json`: Biome 2.6+ manifest exposing configuration profiles (such as `recommended`).
 - `configs/recommended.json`: Recommended Biome configuration ruleset without an unpinned or version-locked `$schema` reference.
-- Manifest exports mapped in `package.json`:
-  - `"biome"`: Points to `./biome-manifest.json` for Biome 2.6+ manifest resolution.
-  - `"."` and `"./configs/recommended"`: Point to `./configs/recommended.json` to ensure both modern subpath extension (`@area44/biome-config/configs/recommended`) and backward compatibility (`@area44/biome-config`) remain fully functional.
+- Package exports mapped in `package.json`:
+  - `"."`: Resolves the root extension path (`@area44/biome-config`).
+  - `"./configs/recommended"`: Resolves the explicit recommended configuration subpath (`@area44/biome-config/configs/recommended`).
 
 ### Scope Boundaries
 
@@ -45,8 +45,8 @@ biome-config/
 - `biome-manifest.json`: Manifest declaring package configs (`recommended: ./configs/recommended.json`) under schema `version: 1`.
 - `configs/recommended.json`: Primary configuration file with file inclusions/exclusions, formatter settings, linter rules, and framework overrides (Svelte, Astro, Vue). The distributed configuration deliberately omits `$schema` to remain fully portable across consumer Biome versions.
 - `biome.json`: Repository configuration extending `./configs/recommended.json` with an explicit `$schema` matching the installed developer Biome version for contributor editor validation.
-- `tests/integration.test.mjs`: Automated integration test suite running on Vitest (`vitest run`), validating real package artifacts (`pnpm pack`) against isolated consumer projects across a matrix of supported Biome versions (`2.6.2` minimum and `2.6.4` current).
-- `package.json`: Package metadata, manifest export mapping, file packaging list, peer dependencies (`@biomejs/biome: ">=2.6.2 <3"`), and script definitions.
+- `tests/integration.test.mjs`: Automated integration test suite running on Vitest (`vitest run`), validating real package artifacts (`pnpm pack`) against isolated consumer projects across supported Biome versions (`2.6.2` minimum and `2.6.4` current).
+- `package.json`: Package metadata, export mappings (`.` and `./configs/recommended`), file packaging list, peer dependencies (`@biomejs/biome: ">=2.6.2 <3"`), and script definitions.
 - `.github/workflows/ci.yml`: Continuous integration workflow validating pull requests with both lint/formatting checks and consumer integration tests.
 - `.github/workflows/release.yml`: Release and publishing workflow validating pushes to `main`, running Release Please, and publishing to npm.
 - `.github/workflows/autofix.yml`: Automated formatting and lint fixing workflow with job-level permissions.
@@ -67,7 +67,7 @@ When modifying this repository, follow these core principles:
 - **Follow Conventions**: Adhere to existing style, formatting, and configuration idioms across JSON and YAML files.
 - **Prefer Established Tooling**: Utilize established tools (`pnpm`, `biome`, Vitest, GitHub Actions) rather than introducing unnecessary external packages.
 - **Minimal & Focused Diffs**: Keep changes targeted to the requested task. Do not add speculative features or unnecessary abstractions.
-- **Preserve Compatibility**: Ensure modifications to configs do not break downstream consumers extending the configuration via modern or legacy paths.
+- **Support Both Configuration Paths**: Ensure modifications preserve both `@area44/biome-config` and `@area44/biome-config/configs/recommended`.
 - **Avoid Lockfile Churn**: Do not modify `pnpm-lock.yaml` unless dependencies are deliberately added, updated, or removed.
 - **Validate Truthfully**: Never claim tests or checks passed without executing them in the environment.
 

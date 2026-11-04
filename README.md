@@ -35,7 +35,18 @@ bun add -d @area44/biome-config "@biomejs/biome@>=2.6.2 <3"
 
 ## Usage
 
-Create or update your project's `biome.json` (or `biome.jsonc`) using the manifest-based configuration extension path:
+Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`). Both the root path and the explicit recommended subpath are officially supported:
+
+### 1. Root path
+
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "extends": ["@area44/biome-config"]
+}
+```
+
+### 2. Explicit recommended path
 
 ```json
 {
@@ -43,6 +54,8 @@ Create or update your project's `biome.json` (or `biome.jsonc`) using the manife
   "extends": ["@area44/biome-config/configs/recommended"]
 }
 ```
+
+Both configuration paths are tested and verified across all supported Biome versions.
 
 ### Schema Configuration Guidance
 
@@ -52,24 +65,12 @@ The distributed configuration (`configs/recommended.json`) omits a hardcoded `$s
 
 - `recommended`: Standard ruleset for general JavaScript, TypeScript, CSS, HTML, YAML, and web framework files (including Astro, Svelte, and Vue).
 
-### Backward Compatibility
-
-For consumers transitioning from older versions, extending `@area44/biome-config` directly remains supported via package exports:
-
-```json
-{
-  "extends": ["@area44/biome-config"]
-}
-```
-
-Both extension paths are verified by automated consumer integration tests across all supported Biome versions.
-
 ## Migration Guide
 
 To migrate from older versions:
 
 1. Ensure your `@biomejs/biome` dependency is updated to `>=2.6.2 <3`.
-2. Update your `biome.json` `extends` array to `@area44/biome-config/configs/recommended`.
+2. Ensure your `biome.json` `extends` array uses either `@area44/biome-config` or `@area44/biome-config/configs/recommended`.
 3. Set your `biome.json` `$schema` to match your installed `@biomejs/biome` version.
 
 ## Contributing
