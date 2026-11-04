@@ -16,20 +16,35 @@
   "keywords": [
     "biome",
     "biome-config",
+    "biome-plugin",
     "linter",
     "formatter"
   ],
   "files": [
-    "biome.jsonc"
+    "biome-manifest.json",
+    "configs"
   ],
-  "main": "./biome.jsonc",
+  "exports": {
+    "biome": "./biome-manifest.json"
+  },
   "scripts": {
     "check": "biome ci .",
+    "fix": "biome check --write",
     "lint": "biome lint --write",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@biomejs/biome": ">=2.6.2 <3"
+  },
+  "peerDependenciesMeta": {
+    "@biomejs/biome": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.4"
+    "@biomejs/biome": "^2.6.4",
+    "vitest": "^5.0.5"
   },
   "packageManager": "pnpm@12.16.1"
 }
