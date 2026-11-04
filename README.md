@@ -44,14 +44,15 @@ Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`) 
 }
 ```
 
-For backward compatibility with tools or existing projects, the root package entry point also resolves to the recommended configuration:
+### Manifest Configuration Resolution & Root Entry Point Note
 
-```json
-{
-  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
-  "extends": ["@area44/biome-config"]
-}
+Biome 2.6+ manifest distribution packages require consumers to specify a named configuration using the `configs/<NAME>` subpath (per official Biome specification: [Publish Biome configurations](https://biomejs.dev/guides/publish-packages/#publish-biome-configurations)). Extending the bare root package specifier (`"@area44/biome-config"`) is not supported by Biome CLI and will return an error:
+
+```text
+Biome manifests must select a named configuration with the configs/ subpath.
 ```
+
+In `package.json`, Node.js conditional exports expose `./biome-manifest.json` under the official `"biome"` condition while providing `"default": "./configs/recommended.json"` for Node.js resolution.
 
 ### Schema Configuration Guidance
 
@@ -66,7 +67,7 @@ The distributed configuration (`configs/recommended.json`) omits a hardcoded `$s
 To migrate from older versions:
 
 1. Ensure your `@biomejs/biome` dependency is updated to `>=2.6.2 <3`.
-2. Update your `biome.json` `extends` array to use the manifest-based subpath `@area44/biome-config/configs/recommended` (e.g. `extends: ["@area44/biome-config/configs/recommended"]`).
+2. **Update your extension path:** In your `biome.json` or `biome.jsonc`, update `extends` from `"@area44/biome-config"` to `"@area44/biome-config/configs/recommended"`.
 3. Set your `biome.json` `$schema` to match your installed `@biomejs/biome` version.
 
 ## Contributing

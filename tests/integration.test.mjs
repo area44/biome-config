@@ -31,6 +31,16 @@ describe("Biome package integration & compatibility matrix", () => {
     expect(fs.existsSync(tarballPath)).toBe(true);
   });
 
+  it("verifies the published package tarball contents", () => {
+    const tarballListing = execFileSync("tar", ["-tf", tarballPath], {
+      encoding: "utf8",
+    });
+    const files = tarballListing.trim().split("\n");
+    expect(files).toContain("package/biome-manifest.json");
+    expect(files).toContain("package/configs/recommended.json");
+    expect(files).toContain("package/package.json");
+  });
+
   afterAll(() => {
     if (tmpRoot && fs.existsSync(tmpRoot)) {
       fs.rmSync(tmpRoot, { recursive: true, force: true });
@@ -175,7 +185,42 @@ describe("Biome package integration & compatibility matrix", () => {
         expect(output).toMatch(/Checked 3 files/);
       });
 
+      it("rejects extending bare root path with expected manifest subpath error diagnostic", () => {
+        fs.writeFileSync(
+          path.join(consumerDir, "biome.json"),
+          JSON.stringify(
+            {
+              extends: ["@area44/biome-config"],
+            },
+            null,
+            2
+          )
+        );
+
+        const res = spawnSync("node", [biomeBinPath, "ci", "."], {
+          cwd: consumerDir,
+          encoding: "utf8",
+        });
+        expect(res.status).not.toBe(0);
+        const combinedOutput = `${res.stdout}\n${res.stderr}`;
+        expect(combinedOutput).toMatch(
+          /Biome manifests must select a named configuration with the .*configs\/.* subpath/
+        );
+      });
+
       it("correctly applies recursive glob exclusions to nested minified and map files", () => {
+        fs.writeFileSync(
+          path.join(consumerDir, "biome.json"),
+          JSON.stringify(
+            {
+              extends: ["@area44/biome-config/configs/recommended"],
+            },
+            null,
+            2
+          )
+        );
+        runBiome(["format", "--write", "biome.json"]);
+
         const nestedDir = path.join(consumerDir, "nested");
         fs.mkdirSync(nestedDir, { recursive: true });
         fs.writeFileSync(
