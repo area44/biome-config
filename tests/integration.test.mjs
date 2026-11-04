@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -6,6 +6,39 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(".");
 const supportedBiomeVersions = ["2.6.2", "2.6.4"];
+
+const TIMEOUT_PACKAGE_OPS_MS = 45_000;
+const TIMEOUT_LOCAL_OPS_MS = 15_000;
+
+function runSync(command, args, options = {}) {
+  const timeout = options.timeout ?? TIMEOUT_LOCAL_OPS_MS;
+  const res = spawnSync(command, args, {
+    cwd: options.cwd ?? repoRoot,
+    encoding: "utf8",
+    timeout,
+    ...options,
+  });
+
+  if (res.error) {
+    if (res.error.code === "ETIMEDOUT") {
+      throw new Error(
+        `Command '${command} ${args.join(" ")}' timed out after ${timeout}ms.\nOutput:\n${res.stdout || ""}\n${res.stderr || ""}`
+      );
+    }
+    throw new Error(
+      `Failed to execute '${command} ${args.join(" ")}': ${res.error.message}`
+    );
+  }
+
+  if (options.check !== false && res.status !== 0) {
+    const signalInfo = res.signal ? ` (terminated by ${res.signal})` : "";
+    throw new Error(
+      `Command '${command} ${args.join(" ")}' failed with exit code ${res.status}${signalInfo}.\nStdout:\n${res.stdout}\nStderr:\n${res.stderr}`
+    );
+  }
+
+  return res;
+}
 
 describe("Biome package integration & compatibility matrix", () => {
   let tmpRoot;
@@ -17,10 +50,10 @@ describe("Biome package integration & compatibility matrix", () => {
     packDir = path.join(tmpRoot, "pack");
     fs.mkdirSync(packDir, { recursive: true });
 
-    // Pack the package using pnpm pack
-    execFileSync("pnpm", ["pack", "--pack-destination", packDir], {
+    // Pack the package using pnpm pack with explicit process timeout
+    runSync("pnpm", ["pack", "--pack-destination", packDir], {
       cwd: repoRoot,
-      encoding: "utf8",
+      timeout: TIMEOUT_PACKAGE_OPS_MS,
     });
 
     const tarballFiles = fs
@@ -31,20 +64,24 @@ describe("Biome package integration & compatibility matrix", () => {
     expect(fs.existsSync(tarballPath)).toBe(true);
   });
 
+  afterAll(() => {
+    if (tmpRoot && fs.existsSync(tmpRoot)) {
+      try {
+        fs.rmSync(tmpRoot, { recursive: true, force: true });
+      } catch {
+        // Ignore cleanup failure in afterAll
+      }
+    }
+  });
+
   it("verifies the published package tarball contents", () => {
-    const tarballListing = execFileSync("tar", ["-tf", tarballPath], {
-      encoding: "utf8",
+    const res = runSync("tar", ["-tf", tarballPath], {
+      timeout: TIMEOUT_LOCAL_OPS_MS,
     });
-    const files = tarballListing.trim().split("\n");
+    const files = res.stdout.trim().split("\n");
     expect(files).toContain("package/biome-manifest.json");
     expect(files).toContain("package/configs/recommended.json");
     expect(files).toContain("package/package.json");
-  });
-
-  afterAll(() => {
-    if (tmpRoot && fs.existsSync(tmpRoot)) {
-      fs.rmSync(tmpRoot, { recursive: true, force: true });
-    }
   });
 
   describe("Package exports and tarball metadata", () => {
@@ -61,9 +98,9 @@ describe("Biome package integration & compatibility matrix", () => {
           2
         )
       );
-      execFileSync("pnpm", ["add", tarballPath], {
+      runSync("pnpm", ["add", tarballPath], {
         cwd: nodeTestDir,
-        encoding: "utf8",
+        timeout: TIMEOUT_PACKAGE_OPS_MS,
       });
     }, 60_000);
 
@@ -132,18 +169,18 @@ describe("Biome package integration & compatibility matrix", () => {
           path.join(consumerDir, ".gitignore"),
           "node_modules/\npnpm-lock.yaml\n"
         );
-        execFileSync("git", ["init", "-b", "main"], {
+        runSync("git", ["init", "-b", "main"], {
           cwd: consumerDir,
-          encoding: "utf8",
+          timeout: TIMEOUT_LOCAL_OPS_MS,
         });
 
         // Install the packed package artifact and specific Biome version
-        execFileSync(
+        runSync(
           "pnpm",
           ["add", tarballPath, `@biomejs/biome@${biomeVersion}`],
           {
             cwd: consumerDir,
-            encoding: "utf8",
+            timeout: TIMEOUT_PACKAGE_OPS_MS,
           }
         );
 
@@ -164,18 +201,13 @@ describe("Biome package integration & compatibility matrix", () => {
         );
       }, 120_000);
 
-      function runBiome(args) {
-        const res = spawnSync("node", [biomeBinPath, ...args], {
+      function runBiome(args, options = {}) {
+        const res = runSync("node", [biomeBinPath, ...args], {
           cwd: consumerDir,
-          encoding: "utf8",
+          timeout: TIMEOUT_LOCAL_OPS_MS,
+          ...options,
         });
-        const combinedOutput = `${res.stdout}\n${res.stderr}`;
-        if (res.status !== 0) {
-          throw new Error(
-            `Biome execution failed (code ${res.status}):\n${combinedOutput}`
-          );
-        }
-        return combinedOutput;
+        return `${res.stdout}\n${res.stderr}`;
       }
 
       it("resolves manifest configuration path (@area44/biome-config/configs/recommended)", () => {
@@ -225,9 +257,10 @@ describe("Biome package integration & compatibility matrix", () => {
           )
         );
 
-        const res = spawnSync("node", [biomeBinPath, "ci", "."], {
+        const res = runSync("node", [biomeBinPath, "ci", "."], {
           cwd: consumerDir,
-          encoding: "utf8",
+          timeout: TIMEOUT_LOCAL_OPS_MS,
+          check: false,
         });
         expect(res.status).not.toBe(0);
         const combinedOutput = `${res.stdout}\n${res.stderr}`;
