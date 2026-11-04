@@ -72,12 +72,15 @@ describe("Language Fixture Verification Suite", () => {
       for (const file of files) {
         const fixturePath = path.join(fixturesDir, lang, file);
 
-        it(`parses and formats ${file} idempotently`, () => {
+        it(`verifies Biome actually processes, checks, and formats ${file} idempotently`, () => {
           expect(fs.existsSync(fixturePath)).toBe(true);
 
-          // Verify Biome check passes without diagnostics
+          // Verify Biome check actually processes the file (not silently ignored)
           const checkRes = runBiome(["check", fixturePath]);
           expect(checkRes.status).toBe(0);
+          const combinedCheckOutput = checkRes.stdout + checkRes.stderr;
+          expect(combinedCheckOutput).toMatch(/Checked 1 file/);
+          expect(combinedCheckOutput).not.toMatch(/ignored/i);
 
           // In an isolated scratch copy inside the repo root, verify formatting idempotency
           const subDir = fs.mkdtempSync(path.join(testScratchDir, "idemp-"));
@@ -88,6 +91,8 @@ describe("Language Fixture Verification Suite", () => {
             // First pass: format --write
             const writeRes = runBiome(["format", "--write", tmpFixturePath]);
             expect(writeRes.status).toBe(0);
+            const combinedWriteOutput = writeRes.stdout + writeRes.stderr;
+            expect(combinedWriteOutput).toMatch(/(Formatted|Checked) 1 file/);
             const contentAfterPass1 = fs.readFileSync(tmpFixturePath, "utf8");
 
             // Second pass: format --write
@@ -112,29 +117,68 @@ describe("Language Fixture Verification Suite", () => {
     });
   }
 
-  it("detects files that require formatting and fails format check", () => {
-    const subDir = fs.mkdtempSync(path.join(testScratchDir, "unformatted-"));
-    const unformattedFile = path.join(subDir, "unformatted.js");
-    fs.writeFileSync(unformattedFile, "const   x=1;\n");
+  describe("Formatting modifies unformatted content across language families", () => {
+    const unformattedCases = [
+      { ext: "js", raw: "const   a=1;\n", formatted: "const a = 1;\n" },
+      {
+        ext: "ts",
+        raw: "const   b:number=2;\n",
+        formatted: "const b: number = 2;\n",
+      },
+      { ext: "json", raw: '{\n"a":   1\n}\n', formatted: '{\n  "a": 1\n}\n' },
+      {
+        ext: "css",
+        raw: "body{margin:0;}\n",
+        formatted: "body {\n  margin: 0;\n}\n",
+      },
+      {
+        ext: "scss",
+        raw: "$c:  red;\n.x{color:$c;}\n",
+        formatted: "$c: red;\n.x {\n  color: $c;\n}\n",
+      },
+      {
+        ext: "html",
+        raw: "<!DOCTYPE html><html><body><h1>test</h1></body></html>\n",
+        formatted:
+          "<!doctype html>\n<html>\n  <body>\n    <h1>test</h1>\n  </body>\n</html>\n",
+      },
+      { ext: "yaml", raw: "a:   1\nb:   2\n", formatted: "a: 1\nb: 2\n" },
+      {
+        ext: "graphql",
+        raw: "query{user{id}}\n",
+        formatted: "query {\n  user {\n    id\n  }\n}\n",
+      },
+    ];
 
-    try {
-      const formatCheck = runBiome(["format", unformattedFile]);
-      expect(formatCheck.status).not.toBe(0);
-      expect(formatCheck.stdout + formatCheck.stderr).toMatch(
-        /Formatter would have printed/
-      );
+    for (const { ext, raw, formatted } of unformattedCases) {
+      it(`detects and formats unformatted .${ext} content`, () => {
+        const subDir = fs.mkdtempSync(
+          path.join(testScratchDir, `unformatted-${ext}-`)
+        );
+        const testFile = path.join(subDir, `test.${ext}`);
+        fs.writeFileSync(testFile, raw);
 
-      // Now format with --write
-      const formatWrite = runBiome(["format", "--write", unformattedFile]);
-      expect(formatWrite.status).toBe(0);
-      const formattedContent = fs.readFileSync(unformattedFile, "utf8");
-      expect(formattedContent).toBe("const x = 1;\n");
+        try {
+          // Format check must fail on unformatted file
+          const checkRes = runBiome(["format", testFile]);
+          expect(checkRes.status).not.toBe(0);
+          expect(checkRes.stdout + checkRes.stderr).toMatch(
+            /Formatter would have printed/
+          );
 
-      // Verify idempotency on previously unformatted file
-      runBiome(["format", "--write", unformattedFile]);
-      expect(fs.readFileSync(unformattedFile, "utf8")).toBe(formattedContent);
-    } finally {
-      fs.rmSync(subDir, { recursive: true, force: true });
+          // Format --write must succeed and change the file content
+          const writeRes = runBiome(["format", "--write", testFile]);
+          expect(writeRes.status).toBe(0);
+          expect(fs.readFileSync(testFile, "utf8")).toBe(formatted);
+
+          // Subsequent format must be idempotent
+          const secondWrite = runBiome(["format", "--write", testFile]);
+          expect(secondWrite.status).toBe(0);
+          expect(fs.readFileSync(testFile, "utf8")).toBe(formatted);
+        } finally {
+          fs.rmSync(subDir, { recursive: true, force: true });
+        }
+      });
     }
   });
 

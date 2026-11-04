@@ -10,12 +10,12 @@ Shared Biome configuration for AREA44 projects.
 
 - **Modular internally, unified externally**: Internally, configuration modules are decoupled by concern (`configs/base/`) and language (`configs/languages/`), composed cleanly through `configs/recommended.json`. Externally, consumers extend a single unified entry point.
 - **Opinionated defaults**: Inspired by Ultracite, prioritizing correctness, error-first linting, type safety, performance, and accessibility.
-- **Experimental features enabled by default**: Features like HTML super-language support (Vue, Svelte, Astro), embedded CSS/GraphQL snippet formatting, and markdown embed analysis are enabled natively where supported.
+- **Experimental features enabled by default**: Features like HTML full support (Vue, Svelte, Astro), embedded CSS/GraphQL snippet formatting, and markdown embed formatting are enabled natively where supported.
 
 ### Supported Biome Versions
 
 - Biome **v2.6.2** and later (`>=2.6.2 <3`).
-- Tested across `@biomejs/biome@2.6.2` (minimum supported version introducing configuration manifest distribution) and `@biomejs/biome@2.6.4` (current).
+- Verified against the minimum supported version (`2.6.2`) and newer compatible releases.
 
 ## Installation
 
@@ -45,7 +45,6 @@ Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`) 
 
 ```json
 {
-  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
   "extends": ["@area44/biome-config/configs/recommended"]
 }
 ```
@@ -60,26 +59,26 @@ Biome manifests must select a named configuration with the configs/ subpath.
 
 ## Supported Languages & Capabilities
 
-| Language         | Extensions                    | Parser  | Formatter | Linter  | Experimental Status | Known Limitations                                                                                                                                                       |
-| :--------------- | :---------------------------- | :------ | :-------- | :------ | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **JavaScript**   | `.js`, `.jsx`, `.mjs`, `.cjs` | Full    | Full      | Full    | Stable              | Embedded snippets enabled (`javascript.experimentalEmbeddedSnippetsEnabled`) for CSS/GraphQL literals without interpolations.                                           |
-| **TypeScript**   | `.ts`, `.tsx`, `.mts`, `.cts` | Full    | Full      | Full    | Stable              | TypeScript files share core lint rules with targeted decorators/syntax enabled.                                                                                         |
-| **JSON & JSONC** | `.json`, `.jsonc`             | Full    | Full      | Full    | Stable              | Comments and trailing commas are allowed in `.jsonc`, `tsconfig*.json`, and `.vscode/*.json`.                                                                           |
-| **CSS**          | `.css`                        | Full    | Full      | Full    | Stable              | Tailwind CSS 4.0 directives (`@theme`, `@utility`) and CSS Modules enabled.                                                                                             |
-| **SCSS**         | `.scss`                       | Partial | Full      | Full    | Stable              | `allowWrongLineComments: true` enables `//` comments in CSS/SCSS files; advanced SCSS features (mixins, functions) have partial parser tolerance.                       |
-| **HTML & SVG**   | `.html`, `.htm`, `.svg`       | Full    | Full      | Full    | Experimental        | `html.experimentalFullSupportEnabled: true`. Tag self-closing follows HTML void element standards.                                                                      |
-| **Vue**          | `.vue`                        | Full    | Full      | Partial | Experimental        | Handled via HTML super-language and parser option `html.parser.vue: true`. Framework overrides relax `noUnusedVariables`/`noUnusedImports` for template-bound bindings. |
-| **Svelte**       | `.svelte`                     | Full    | Full      | Partial | Experimental        | Handled via HTML super-language. Svelte 5 runes (`$state`, `$derived`, `$props`) format cleanly; template-only references are relaxed from unused checks.               |
-| **Astro**        | `.astro`                      | Full    | Full      | Partial | Experimental        | Handled via HTML super-language. Astro frontmatter and markup parse and format; frontmatter imports used in template are relaxed from unused variable errors.           |
-| **Markdown**     | `.md`                         | Full    | Full      | Full    | Stable              | Frontmatter (YAML) and GFM enabled. Embedded code block analysis (`analyzeEmbeds: true`) and formatting (`formatEmbeds: true`) enabled.                                 |
-| **YAML**         | `.yaml`, `.yml`               | Full    | Full      | Full    | Stable              | GitHub Actions workflows under `.github/workflows/*.yml` are fully processed and validated.                                                                             |
-| **GraphQL**      | `.graphql`, `.gql`            | Full    | Full      | Full    | Stable              | Schema and query formatting enabled with double quote style.                                                                                                            |
+| Language         | Extensions                    | Parser  | Formatter | Linter | Experimental Status | Known Limitations                                                                                                             |
+| :--------------- | :---------------------------- | :------ | :-------- | :----- | :------------------ | :---------------------------------------------------------------------------------------------------------------------------- |
+| **JavaScript**   | `.js`, `.jsx`, `.mjs`, `.cjs` | Full    | Full      | Full   | Stable              | Embedded snippets enabled (`javascript.experimentalEmbeddedSnippetsEnabled`) for CSS/GraphQL literals without interpolations. |
+| **TypeScript**   | `.ts`, `.tsx`, `.mts`, `.cts` | Full    | Full      | Full   | Stable              | TypeScript files share core lint rules and formatter conventions.                                                             |
+| **JSON & JSONC** | `.json`, `.jsonc`             | Full    | Full      | Full   | Stable              | Comments and trailing commas are allowed natively based on file type and common config patterns.                              |
+| **CSS**          | `.css`                        | Full    | Full      | Full   | Stable              | Tailwind CSS 4.0 directives (`@theme`, `@utility`) and CSS Modules enabled.                                                   |
+| **SCSS**         | `.scss`                       | Partial | Full      | Full   | Stable              | Line comments (`//`) allowed; SCSS nesting, mixins, and functions parse and format cleanly.                                   |
+| **HTML & SVG**   | `.html`, `.htm`, `.svg`       | Full    | Full      | Full   | Experimental        | `html.experimentalFullSupportEnabled: true`. Tag self-closing follows HTML void element standards.                            |
+| **Vue**          | `.vue`                        | Full    | Full      | Full   | Experimental        | Handled via HTML super-language. Single-file components parse, format, and lint template bindings natively.                   |
+| **Svelte**       | `.svelte`                     | Full    | Full      | Full   | Experimental        | Handled via HTML super-language. Svelte 5 runes (`$state`, `$derived`, `$props`) format and lint template bindings cleanly.   |
+| **Astro**        | `.astro`                      | Full    | Full      | Full   | Experimental        | Handled via HTML super-language. Astro frontmatter and markup parse, format, and lint template bindings natively.             |
+| **Markdown**     | `.md`                         | Full    | Full      | Full   | Stable              | Frontmatter (YAML) and GFM enabled. Embedded code block formatting (`formatEmbeds: true`) enabled.                            |
+| **YAML**         | `.yaml`, `.yml`               | Full    | Full      | Full   | Stable              | GitHub Actions workflows under `.github/workflows/*.ya?ml` are fully processed and validated.                                 |
+| **GraphQL**      | `.graphql`, `.gql`            | Full    | Full      | Full   | Stable              | Schema and query formatting enabled with double quote style.                                                                  |
 
 ## File Inclusions and Exclusions
 
 The configuration processes all supported file types across your repository by default (`"**"`).
 
-- **Included by default**: Source code, Markdown documentation, GraphQL schemas/queries, Vue/Svelte/Astro components, CSS/SCSS files, and GitHub Actions workflows (`.github/workflows/*.yml`).
+- **Included by default**: Source code, Markdown documentation, GraphQL schemas/queries, Vue/Svelte/Astro components, CSS/SCSS files, and GitHub Actions workflows (`.github/workflows/*.yml`, `.github/workflows/*.yaml`).
 - **Excluded by default**: Build artifacts and dependencies (`dist`, `build`, `out`, `public`, `.astro`, `.next`, `.netlify`, `.output`, `.svelte-kit`, `coverage`, `.turbo`), minified files (`*.min.*`), and source maps (`*.map`).
 
 ## Architecture & Directory Structure

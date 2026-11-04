@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(".");
+// Minimum supported Biome version and installed developer version for compatibility matrix
 const supportedBiomeVersions = ["2.6.2", "2.6.4"];
 
 const TIMEOUT_PACKAGE_OPS_MS = 45_000;
@@ -151,7 +152,7 @@ describe("Biome package integration & compatibility matrix", () => {
   });
 
   for (const biomeVersion of supportedBiomeVersions) {
-    describe(`Biome v${biomeVersion}`, () => {
+    describe(`Biome compatibility with v${biomeVersion}`, () => {
       let consumerDir;
       let biomeBinPath;
 
@@ -250,6 +251,68 @@ describe("Biome package integration & compatibility matrix", () => {
 
         runBiome(["format", "--write", ".github/workflows/ci.yml"]);
         const checkRes = runBiome(["check", ".github/workflows/ci.yml"]);
+        expect(checkRes).toMatch(/Checked 1 file/);
+      });
+
+      it("handles tsconfig.json and .vscode/*.json with comments and trailing commas", () => {
+        fs.writeFileSync(
+          path.join(consumerDir, "tsconfig.json"),
+          '{\n  // TSConfig compiler options\n  "compilerOptions": {\n    "strict": true,\n    "target": "ESNext",\n  },\n}\n'
+        );
+
+        const vscodeDir = path.join(consumerDir, ".vscode");
+        fs.mkdirSync(vscodeDir, { recursive: true });
+        fs.writeFileSync(
+          path.join(vscodeDir, "settings.json"),
+          '{\n  // Editor settings\n  "editor.formatOnSave": true,\n}\n'
+        );
+
+        // Run format --write to format JSONC files according to recommended config
+        runBiome([
+          "format",
+          "--write",
+          "tsconfig.json",
+          ".vscode/settings.json",
+        ]);
+        const checkRes = runBiome([
+          "check",
+          "tsconfig.json",
+          ".vscode/settings.json",
+        ]);
+        expect(checkRes).toMatch(/Checked 2 files/);
+      });
+
+      it("processes Vue, Svelte, and Astro components with template bindings natively", () => {
+        const componentsDir = path.join(consumerDir, "components");
+        fs.mkdirSync(componentsDir, { recursive: true });
+
+        fs.writeFileSync(
+          path.join(componentsDir, "Card.vue"),
+          '<script setup>\nimport { ref } from "vue";\n\nconst title = ref("Hello Vue");\n</script>\n<template>\n  <div class="card">\n    <h1>{{ title }}</h1>\n  </div>\n</template>\n'
+        );
+
+        fs.writeFileSync(
+          path.join(componentsDir, "Counter.svelte"),
+          '<script>\n  let count = $state(0);\n  function increment() {\n    count += 1;\n  }\n</script>\n<main>\n  <button type="button" onclick={increment}>\n    Count: {count}\n  </button>\n</main>\n'
+        );
+
+        fs.writeFileSync(
+          path.join(componentsDir, "Page.astro"),
+          '---\nconst { title = "Home" } = Astro.props;\n---\n<article>\n  <h1>{title}</h1>\n  <p>Astro content</p>\n</article>\n'
+        );
+
+        runBiome(["format", "--write", "components"]);
+        const checkRes = runBiome(["check", "components"]);
+        expect(checkRes).toMatch(/Checked 3 files/);
+      });
+
+      it("handles markdown files with incomplete or partial embedded code without errors", () => {
+        fs.writeFileSync(
+          path.join(consumerDir, "example.md"),
+          "# Incomplete Snippet Example\n\n```javascript\nfunction partial(x) {\n  return\n```\n"
+        );
+
+        const checkRes = runBiome(["check", "example.md"]);
         expect(checkRes).toMatch(/Checked 1 file/);
       });
 
