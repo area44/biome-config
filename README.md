@@ -4,12 +4,7 @@ Shared Biome configuration for AREA44 projects.
 
 ## Overview
 
-`@area44/biome-config` distributes shared Biome rules and formatting presets using Biome 2.6+'s configuration manifest architecture (`biome-manifest.json`).
-
-### Supported Biome Versions
-
-- Biome **v2.6.2** and later (`>=2.6.2 <3`).
-- Verified against `@biomejs/biome@2.6.2` (minimum supported version introducing configuration manifest distribution) and `@biomejs/biome@2.6.4` (current).
+`@area44/biome-config` distributes shared Biome rules and formatting presets using Biome's configuration manifest architecture (`biome-manifest.json`).
 
 ## Installation
 
@@ -68,14 +63,6 @@ The distributed configuration (`configs/recommended.json`) omits a hardcoded `$s
 ### Profiles
 
 - `recommended`: Standard ruleset for general JavaScript, TypeScript, CSS, HTML, YAML, and web framework files (including Astro, Svelte, and Vue).
-
-## Migration Guide
-
-To migrate from older versions:
-
-1. Ensure your `@biomejs/biome` dependency is updated to `>=2.6.2 <3`.
-2. **Update your extension path:** In your `biome.json` or `biome.jsonc`, update `extends` from `"@area44/biome-config"` to `"@area44/biome-config/configs/recommended"`.
-3. Set your `biome.json` `$schema` to match your installed `@biomejs/biome` version.
 
 ## Contributing
 
