@@ -10,25 +10,7 @@
       "trailingCommas": "es5"
     },
     "parser": {
-      "jsxEverywhere": true,
-      "unsafeParameterDecoratorsEnabled": true
+      "jsxEverywhere": true
     }
-  },
-  "overrides": [
-    {
-      "includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useConst": "off",
-            "useImportType": "off"
-          },
-          "correctness": {
-            "noUnusedVariables": "off",
-            "noUnusedImports": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

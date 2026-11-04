@@ -254,10 +254,33 @@ describe("Biome package integration & compatibility matrix", () => {
       });
 
       it("formats all language fixtures idempotently", () => {
+        // Run first formatting pass
         runBiome(["format", "--write", "fixtures"]);
-        const formatPass2 = runBiome(["format", "fixtures"]);
-        // Should not have any changes to apply in second pass
-        expect(formatPass2).not.toMatch(/Formatter would have printed/);
+        // Capture snapshot of formatted contents
+        const filesMap = new Map();
+        function readDirRecursive(dir) {
+          for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+              readDirRecursive(fullPath);
+            } else if (entry.isFile()) {
+              filesMap.set(fullPath, fs.readFileSync(fullPath, "utf8"));
+            }
+          }
+        }
+        readDirRecursive(path.join(consumerDir, "fixtures"));
+
+        // Run second formatting pass
+        runBiome(["format", "--write", "fixtures"]);
+
+        // Verify content remained identical
+        for (const [filePath, originalContent] of filesMap.entries()) {
+          expect(fs.readFileSync(filePath, "utf8")).toBe(originalContent);
+        }
+
+        // Re-running format check should not report any changes needed
+        const formatCheck = runBiome(["format", "fixtures"]);
+        expect(formatCheck).not.toMatch(/Formatter would have printed/);
       });
 
       it("rejects extending bare root path with expected manifest subpath error diagnostic", () => {

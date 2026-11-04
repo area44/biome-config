@@ -7,10 +7,6 @@
       "indentScriptAndStyle": true,
       "selfCloseVoidElements": "never",
       "whitespaceSensitivity": "css"
-    },
-    "parser": {
-      "interpolation": true,
-      "vue": true
     }
   }
 }

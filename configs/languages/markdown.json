@@ -1,6 +1,5 @@
 {
   "markdown": {
-    "analyzeEmbeds": true,
     "formatter": {
       "enabled": true,
       "formatEmbeds": true,

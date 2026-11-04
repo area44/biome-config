@@ -1,10 +1,25 @@
-// SCSS style variables and nesting
+// SCSS style variables, nesting, mixins, and functions
 $primary-color: #3490dc;
+$base-spacing: 8px;
+
+@function multiply-spacing($multiplier) {
+  @return $base-spacing * $multiplier;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .card {
   background-color: $primary-color;
+  padding: multiply-spacing(2);
+
+  @include flex-center;
 
   .card-body {
-    padding: 1rem;
+    margin-top: multiply-spacing(1);
+    color: #ffffff;
   }
 }

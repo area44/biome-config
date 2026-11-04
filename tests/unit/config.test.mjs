@@ -37,8 +37,6 @@ describe("Configuration modular structure and schema compliance", () => {
       fs.readFileSync(path.join(configsDir, "languages/html.json"), "utf8")
     );
     expect(htmlConfig.html.experimentalFullSupportEnabled).toBe(true);
-    expect(htmlConfig.html.parser.vue).toBe(true);
-    expect(htmlConfig.html.parser.interpolation).toBe(true);
 
     const jsConfig = JSON.parse(
       fs.readFileSync(
@@ -52,14 +50,20 @@ describe("Configuration modular structure and schema compliance", () => {
     const mdConfig = JSON.parse(
       fs.readFileSync(path.join(configsDir, "languages/markdown.json"), "utf8")
     );
-    expect(mdConfig.markdown.analyzeEmbeds).toBe(true);
     expect(mdConfig.markdown.formatter.formatEmbeds).toBe(true);
+    expect(mdConfig.markdown.parser.gfm).toBe(true);
 
     const cssConfig = JSON.parse(
       fs.readFileSync(path.join(configsDir, "languages/css.json"), "utf8")
     );
     expect(cssConfig.css.parser.tailwindDirectives).toBe(true);
     expect(cssConfig.css.parser.allowWrongLineComments).toBe(true);
+
+    const jsonConfig = JSON.parse(
+      fs.readFileSync(path.join(configsDir, "languages/json.json"), "utf8")
+    );
+    // Verified that global parser allowComments/allowTrailingCommas are unset to preserve native detection
+    expect(jsonConfig.json.parser).toBeUndefined();
   });
 
   it("composes all modular configs into recommended.json", () => {
