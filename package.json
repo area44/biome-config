@@ -26,8 +26,8 @@
   ],
   "main": "./configs/recommended.json",
   "exports": {
-    ".": "./configs/recommended.json",
-    "./configs/recommended": "./configs/recommended.json"
+    "biome": "./biome-manifest.json",
+    "default": "./configs/recommended.json"
   },
   "scripts": {
     "check": "biome ci .",

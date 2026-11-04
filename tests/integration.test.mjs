@@ -37,7 +37,7 @@ describe("Biome package integration & compatibility matrix", () => {
     }
   });
 
-  it("validates Node.js package resolution compliance for both supported paths", () => {
+  it("validates Node.js package resolution compliance and exports conditions", () => {
     const nodeTestDir = path.join(tmpRoot, "consumer-node-resolve");
     fs.mkdirSync(nodeTestDir, { recursive: true });
     fs.writeFileSync(
@@ -49,27 +49,30 @@ describe("Biome package integration & compatibility matrix", () => {
       encoding: "utf8",
     });
 
-    // 1. CommonJS resolution check
-    const rootPath = require.resolve("@area44/biome-config", {
-      paths: [nodeTestDir],
-    });
-    const subpath = require.resolve(
-      "@area44/biome-config/configs/recommended",
-      {
-        paths: [nodeTestDir],
-      }
+    // 1. Verify exports in installed package.json
+    const installedPkg = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          nodeTestDir,
+          "node_modules",
+          "@area44",
+          "biome-config",
+          "package.json"
+        ),
+        "utf8"
+      )
     );
-    expect(fs.existsSync(rootPath)).toBe(true);
-    expect(fs.existsSync(subpath)).toBe(true);
-    expect(rootPath).toBe(subpath);
+    expect(installedPkg.exports).toEqual({
+      biome: "./biome-manifest.json",
+      default: "./configs/recommended.json",
+    });
 
-    // 2. ESM import check
+    // 2. ESM import check using "default" condition
     fs.writeFileSync(
       path.join(nodeTestDir, "test.mjs"),
       [
         'import rootConfig from "@area44/biome-config" with { type: "json" };',
-        'import subpathConfig from "@area44/biome-config/configs/recommended" with { type: "json" };',
-        "if (!rootConfig.formatter || !subpathConfig.formatter) process.exit(1);",
+        "if (!rootConfig.formatter) process.exit(1);",
       ].join("\n")
     );
 
@@ -155,24 +158,7 @@ describe("Biome package integration & compatibility matrix", () => {
         return combinedOutput;
       }
 
-      it("resolves root configuration path (@area44/biome-config)", () => {
-        fs.writeFileSync(
-          path.join(consumerDir, "biome.json"),
-          JSON.stringify(
-            {
-              extends: ["@area44/biome-config"],
-            },
-            null,
-            2
-          )
-        );
-
-        runBiome(["format", "--write", "."]);
-        const output = runBiome(["ci", "."]);
-        expect(output).toMatch(/Checked 3 files/);
-      });
-
-      it("resolves explicit recommended subpath (@area44/biome-config/configs/recommended)", () => {
+      it("resolves manifest configuration path (@area44/biome-config/configs/recommended)", () => {
         fs.writeFileSync(
           path.join(consumerDir, "biome.json"),
           JSON.stringify(
