@@ -1,0 +1,24 @@
+{
+  "json": {
+    "formatter": {
+      "bracketSpacing": true,
+      "enabled": true,
+      "trailingCommas": "none"
+    },
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": false
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.jsonc", "**/tsconfig*.json", "**/.vscode/*.json"],
+      "json": {
+        "parser": {
+          "allowComments": true,
+          "allowTrailingCommas": true
+        }
+      }
+    }
+  ]
+}

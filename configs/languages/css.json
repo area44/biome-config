@@ -1,0 +1,13 @@
+{
+  "css": {
+    "formatter": {
+      "enabled": true,
+      "quoteStyle": "double"
+    },
+    "parser": {
+      "allowWrongLineComments": true,
+      "cssModules": true,
+      "tailwindDirectives": true
+    }
+  }
+}

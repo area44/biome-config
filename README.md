@@ -4,12 +4,18 @@ Shared Biome configuration for AREA44 projects.
 
 ## Overview
 
-`@area44/biome-config` distributes shared Biome rules and formatting presets using Biome 2.6+'s configuration manifest architecture (`biome-manifest.json`).
+`@area44/biome-config` distributes an opinionated, comprehensive Biome configuration using Biome 2.6+'s configuration manifest architecture (`biome-manifest.json`).
+
+### Configuration Philosophy
+
+- **Modular internally, unified externally**: Internally, configuration modules are decoupled by concern (`configs/base/`) and language (`configs/languages/`), composed cleanly through `configs/recommended.json`. Externally, consumers extend a single unified entry point.
+- **Opinionated defaults**: Inspired by Ultracite, prioritizing correctness, error-first linting, type safety, performance, and accessibility.
+- **Experimental features enabled by default**: Features like HTML super-language support (Vue, Svelte, Astro), embedded CSS/GraphQL snippet formatting, and markdown embed analysis are enabled natively where supported.
 
 ### Supported Biome Versions
 
 - Biome **v2.6.2** and later (`>=2.6.2 <3`).
-- Verified against `@biomejs/biome@2.6.2` (minimum supported version introducing configuration manifest distribution) and `@biomejs/biome@2.6.4` (current).
+- Tested across `@biomejs/biome@2.6.2` (minimum supported version introducing configuration manifest distribution) and `@biomejs/biome@2.6.4` (current).
 
 ## Installation
 
@@ -35,7 +41,7 @@ bun add -d @area44/biome-config @biomejs/biome
 
 ## Usage
 
-Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`) using the official manifest-based configuration subpath:
+Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`) using the single recommended entry point:
 
 ```json
 {
@@ -46,36 +52,87 @@ Extend `@area44/biome-config` in your project's `biome.json` (or `biome.jsonc`) 
 
 ### Manifest Configuration Resolution & Root Entry Point Note
 
-Biome 2.6+ manifest distribution packages require consumers to specify a named configuration using the `configs/<NAME>` subpath (per official Biome specification: [Publish Biome configurations](https://biomejs.dev/guides/publish-packages/#publish-biome-configurations)). Extending the bare root package specifier (`"@area44/biome-config"`) is not supported by Biome CLI and will return an error:
+Biome 2.6+ manifest distribution packages require consumers to specify a named configuration using the `configs/<NAME>` subpath (per official Biome specification: [Publish Biome configurations](https://biomejs.dev/guides/publish-packages/#publish-biome-configurations)). Extending the bare root package specifier (`"@area44/biome-config"`) is not supported by the Biome resolver and will return:
 
 ```text
 Biome manifests must select a named configuration with the configs/ subpath.
 ```
 
-In `package.json`, package exports expose `./biome-manifest.json` strictly under the official `"biome"` condition (`"exports": { "biome": "./biome-manifest.json" }`).
+## Supported Languages & Capabilities
 
-### Excluded Directories
+| Language         | Extensions                    | Parser  | Formatter | Linter  | Experimental Status | Known Limitations                                                                                                                                                       |
+| :--------------- | :---------------------------- | :------ | :-------- | :------ | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **JavaScript**   | `.js`, `.jsx`, `.mjs`, `.cjs` | Full    | Full      | Full    | Stable              | Embedded snippets enabled (`javascript.experimentalEmbeddedSnippetsEnabled`) for CSS/GraphQL literals without interpolations.                                           |
+| **TypeScript**   | `.ts`, `.tsx`, `.mts`, `.cts` | Full    | Full      | Full    | Stable              | TypeScript files share core lint rules with targeted decorators/syntax enabled.                                                                                         |
+| **JSON & JSONC** | `.json`, `.jsonc`             | Full    | Full      | Full    | Stable              | Comments and trailing commas are allowed in `.jsonc`, `tsconfig*.json`, and `.vscode/*.json`.                                                                           |
+| **CSS**          | `.css`                        | Full    | Full      | Full    | Stable              | Tailwind CSS 4.0 directives (`@theme`, `@utility`) and CSS Modules enabled.                                                                                             |
+| **SCSS**         | `.scss`                       | Partial | Full      | Full    | Stable              | `allowWrongLineComments: true` enables `//` comments in CSS/SCSS files; advanced SCSS features (mixins, functions) have partial parser tolerance.                       |
+| **HTML & SVG**   | `.html`, `.htm`, `.svg`       | Full    | Full      | Full    | Experimental        | `html.experimentalFullSupportEnabled: true`. Tag self-closing follows HTML void element standards.                                                                      |
+| **Vue**          | `.vue`                        | Full    | Full      | Partial | Experimental        | Handled via HTML super-language and parser option `html.parser.vue: true`. Framework overrides relax `noUnusedVariables`/`noUnusedImports` for template-bound bindings. |
+| **Svelte**       | `.svelte`                     | Full    | Full      | Partial | Experimental        | Handled via HTML super-language. Svelte 5 runes (`$state`, `$derived`, `$props`) format cleanly; template-only references are relaxed from unused checks.               |
+| **Astro**        | `.astro`                      | Full    | Full      | Partial | Experimental        | Handled via HTML super-language. Astro frontmatter and markup parse and format; frontmatter imports used in template are relaxed from unused variable errors.           |
+| **Markdown**     | `.md`                         | Full    | Full      | Full    | Stable              | Frontmatter (YAML) and GFM enabled. Embedded code block analysis (`analyzeEmbeds: true`) and formatting (`formatEmbeds: true`) enabled.                                 |
+| **YAML**         | `.yaml`, `.yml`               | Full    | Full      | Full    | Stable              | GitHub Actions workflows under `.github/workflows/*.yml` are fully processed and validated.                                                                             |
+| **GraphQL**      | `.graphql`, `.gql`            | Full    | Full      | Full    | Stable              | Schema and query formatting enabled with double quote style.                                                                                                            |
 
-The configuration automatically excludes build artifacts and sensitive metadata directories from processing:
-- Build output / generated directories: `dist`, `build`, `out`, `public`, `.astro`, `.next`, `.netlify`
-- Minified files and source maps: `!**/*.min.*`, `!**/*.map`
-- Automation and GitHub workflows: `!**/.github`, `!**/.github/**` (all `.github` contents are completely excluded from Biome formatting and linting).
+## File Inclusions and Exclusions
 
-### Schema Configuration Guidance
+The configuration processes all supported file types across your repository by default (`"**"`).
 
-The distributed configuration (`configs/recommended.json`) omits a hardcoded `$schema` URL so consumers can use any supported Biome version without version mismatch warnings. Consumers should specify the `$schema` corresponding to their installed `@biomejs/biome` version in their own root `biome.json` (e.g. `https://biomejs.dev/schemas/<version>/schema.json`).
+- **Included by default**: Source code, Markdown documentation, GraphQL schemas/queries, Vue/Svelte/Astro components, CSS/SCSS files, and GitHub Actions workflows (`.github/workflows/*.yml`).
+- **Excluded by default**: Build artifacts and dependencies (`dist`, `build`, `out`, `public`, `.astro`, `.next`, `.netlify`, `.output`, `.svelte-kit`, `coverage`, `.turbo`), minified files (`*.min.*`), and source maps (`*.map`).
 
-### Profiles
+## Architecture & Directory Structure
 
-- `recommended`: Standard ruleset for general JavaScript, TypeScript, CSS, HTML, YAML, and web framework files (including Astro, Svelte, and Vue).
-
-## Migration Guide
-
-To migrate from older versions:
-
-1. Ensure your `@biomejs/biome` dependency is updated to `>=2.6.2 <3`.
-2. **Update your extension path:** In your `biome.json` or `biome.jsonc`, update `extends` from `"@area44/biome-config"` to `"@area44/biome-config/configs/recommended"`.
-3. Set your `biome.json` `$schema` to match your installed `@biomejs/biome` version.
+```text
+biome-config/
+├── biome-manifest.json
+├── biome.json
+├── package.json
+│
+├── configs/
+│   ├── recommended.json
+│   │
+│   ├── base/
+│   │   ├── files.json
+│   │   ├── formatter.json
+│   │   └── linter.json
+│   │
+│   └── languages/
+│       ├── javascript.json
+│       ├── json.json
+│       ├── css.json
+│       ├── html.json
+│       ├── markdown.json
+│       ├── yaml.json
+│       └── graphql.json
+│
+├── tests/
+│   ├── unit/
+│   │   ├── config.test.mjs
+│   │   └── fixtures.test.mjs
+│   ├── integration/
+│   │   └── consumer.test.mjs
+│   └── fixtures/
+│       ├── javascript/
+│       ├── typescript/
+│       ├── json/
+│       ├── css/
+│       ├── scss/
+│       ├── html/
+│       ├── svg/
+│       ├── vue/
+│       ├── svelte/
+│       ├── astro/
+│       ├── markdown/
+│       ├── yaml/
+│       └── graphql/
+│
+├── README.md
+├── AGENT.md
+└── .github/
+    └── workflows/
+```
 
 ## Contributing
 
@@ -85,7 +142,7 @@ To migrate from older versions:
 - `pnpm run fix`: Applies safe fixes and formatting (`biome check --write`).
 - `pnpm run lint`: Applies automatic linter fixes (`biome lint --write`).
 - `pnpm run format`: Applies automatic formatting fixes (`biome format --write`).
-- `pnpm test`: Runs the Vitest integration test suite (`vitest run`), validating package artifacts against isolated consumer projects across supported Biome versions.
+- `pnpm test`: Runs Vitest test suite (`vitest run`), validating unit tests, fixture integrity, and package integration matrix.
 
 ## License
 

@@ -1,0 +1,5 @@
+{
+  // Configuration details
+  "target": "es2022",
+  "strict": true
+}

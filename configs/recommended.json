@@ -1,88 +1,14 @@
 {
-  "files": {
-    "includes": [
-      "**",
-      "!**/*.min.*",
-      "!**/*.map",
-      "!**/public",
-      "!**/build",
-      "!**/dist",
-      "!**/out",
-      "!**/.astro",
-      "!**/.github",
-      "!**/.github/**",
-      "!**/.netlify",
-      "!**/.next"
-    ]
-  },
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true,
-    "defaultBranch": "main"
-  },
-  "linter": {
-    "rules": {
-      "style": {
-        "noNonNullAssertion": "off",
-        "useImportType": "off",
-        "noParameterAssign": "error",
-        "useAsConstAssertion": "error",
-        "useDefaultParameterLast": "error",
-        "useEnumInitializers": "error",
-        "useSelfClosingElements": "error",
-        "useSingleVarDeclarator": "error",
-        "noUnusedTemplateLiteral": "error",
-        "useNumberNamespace": "error",
-        "noInferrableTypes": "error",
-        "noUselessElse": "error"
-      },
-      "a11y": {
-        "noSvgWithoutTitle": "off"
-      }
-    }
-  },
-  "formatter": {
-    "formatWithErrors": true,
-    "indentStyle": "space"
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
-  },
-  "javascript": {
-    "formatter": {
-      "trailingCommas": "es5"
-    }
-  },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
-    }
-  },
-  "html": {
-    "formatter": {
-      "indentScriptAndStyle": true
-    }
-  },
-  "overrides": [
-    {
-      "includes": ["**/*.svelte", "**/*.astro", "**/*.vue"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useConst": "off",
-            "useImportType": "off"
-          },
-          "correctness": {
-            "noUnusedVariables": "off",
-            "noUnusedImports": "off"
-          }
-        }
-      }
-    }
+  "extends": [
+    "./base/files.json",
+    "./base/formatter.json",
+    "./base/linter.json",
+    "./languages/javascript.json",
+    "./languages/json.json",
+    "./languages/css.json",
+    "./languages/html.json",
+    "./languages/markdown.json",
+    "./languages/yaml.json",
+    "./languages/graphql.json"
   ]
 }

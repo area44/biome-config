@@ -4,7 +4,13 @@ Practical guidance for AI coding agents and contributors working in this reposit
 
 ## 1. Project Overview
 
-`@area44/biome-config` is a shared Biome configuration package for AREA44 projects. It provides a standardized, reusable configuration for linting and formatting JavaScript, TypeScript, JSX, TSX, CSS, HTML, YAML, Astro, Svelte, and Vue files.
+`@area44/biome-config` is a shared Biome configuration package for AREA44 projects. It provides a standardized, reusable configuration for linting and formatting JavaScript, TypeScript, JSX, TSX, CSS, SCSS, HTML, SVG, JSON, JSONC, YAML, Markdown, GraphQL, Astro, Svelte, and Vue files.
+
+### Architectural Principle
+
+**Modular internally, unified externally**:
+- **Internal**: Configurations are decoupled by concern and language (`configs/base/`, `configs/languages/`), merged via `configs/recommended.json`.
+- **External**: Consumers extend the single preset entry point: `@area44/biome-config/configs/recommended`.
 
 ### What Problem It Solves
 
@@ -13,11 +19,12 @@ Instead of duplicating Biome linting and formatting rules across multiple reposi
 ### What the Package Exposes
 
 - `biome-manifest.json`: Biome 2.6+ manifest exposing configuration profiles (such as `recommended`).
-- `configs/recommended.json`: Recommended Biome configuration ruleset without an unpinned or version-locked `$schema` reference.
-- Package exports mapped in `package.json`:
+- `configs/recommended.json`: Recommended entry point composing base and language configs without version-locked `$schema`.
+- `configs/base/`: Shared defaults (`files.json`, `formatter.json`, `linter.json`).
+- `configs/languages/`: Language configurations (`javascript.json`, `json.json`, `css.json`, `html.json`, `markdown.json`, `yaml.json`, `graphql.json`).
+- Package exports in `package.json`:
   - `"biome"`: Resolves `./biome-manifest.json` for Biome 2.6+ manifest-based resolution.
-- Consumers extend the package using `@area44/biome-config/configs/recommended`. Biome manifests require selecting a named configuration under the `configs/` subpath.
-- The `.github/` directory is excluded from Biome formatting and linting.
+- Consumers extend the package using `@area44/biome-config/configs/recommended`. Extending the bare package specifier is rejected by the Biome manifest resolver.
 
 ### Scope Boundaries
 
@@ -25,32 +32,62 @@ This repository is strictly dedicated to maintaining the shared Biome configurat
 
 ## 2. Project Architecture
 
-The repository publishes configuration assets directly through Biome's manifest distribution specification:
-
 ```text
 biome-config/
-├── configs/
-│   └── recommended.json
 ├── biome-manifest.json
 ├── biome.json
-├── tests/
-│   └── integration.test.mjs
 ├── package.json
+│
+├── configs/
+│   ├── recommended.json
+│   │
+│   ├── base/
+│   │   ├── files.json
+│   │   ├── formatter.json
+│   │   └── linter.json
+│   │
+│   └── languages/
+│       ├── javascript.json
+│       ├── json.json
+│       ├── css.json
+│       ├── html.json
+│       ├── markdown.json
+│       ├── yaml.json
+│       └── graphql.json
+│
+├── tests/
+│   ├── unit/
+│   │   ├── config.test.mjs
+│   │   └── fixtures.test.mjs
+│   ├── integration/
+│   │   └── consumer.test.mjs
+│   └── fixtures/
+│       ├── javascript/
+│       ├── typescript/
+│       ├── json/
+│       ├── css/
+│       ├── scss/
+│       ├── html/
+│       ├── svg/
+│       ├── vue/
+│       ├── svelte/
+│       ├── astro/
+│       ├── markdown/
+│       ├── yaml/
+│       └── graphql/
+│
 ├── README.md
 ├── AGENT.md
-├── pnpm-lock.yaml
 └── .github/
     └── workflows/
 ```
 
 - `biome-manifest.json`: Manifest declaring package configs (`recommended: ./configs/recommended.json`) under schema `version: 1`.
-- `configs/recommended.json`: Primary configuration file with file inclusions/exclusions, formatter settings, linter rules, and framework overrides (Svelte, Astro, Vue). The distributed configuration deliberately omits `$schema` to remain fully portable across consumer Biome versions.
+- `configs/recommended.json`: Composed entry point extending base and language configurations.
 - `biome.json`: Repository configuration extending `./configs/recommended.json` with an explicit `$schema` matching the installed developer Biome version for contributor editor validation.
-- `tests/integration.test.mjs`: Automated integration test suite running on Vitest (`vitest run`), validating real package artifacts (`pnpm pack`) against isolated consumer projects across supported Biome versions (`2.6.2` minimum and `2.6.4` current).
-- `package.json`: Package metadata, export condition (`biome`), file packaging list, peer dependencies (`@biomejs/biome: ">=2.6.2 <3"`), and script definitions.
-- `.github/workflows/ci.yml`: Continuous integration workflow validating pull requests with both lint/formatting checks and consumer integration tests.
-- `.github/workflows/release.yml`: Release and publishing workflow validating pushes to `main`, running Release Please, and publishing to npm.
-- `.github/workflows/autofix.yml`: Automated formatting and lint fixing workflow with job-level permissions.
+- `tests/unit/`: Automated unit tests validating configuration structure, schema keys, and fixture idempotency.
+- `tests/integration/`: Automated integration tests (`vitest run`) validating real packed tarballs (`pnpm pack`) against isolated consumer projects across supported Biome versions (`2.6.2` minimum and `2.6.4` current).
+- `package.json`: Package metadata, export condition (`biome`), file packaging list (`biome-manifest.json`, `configs`), peer dependencies, and script definitions.
 
 ### Package Scripts
 
@@ -58,7 +95,7 @@ biome-config/
 - `pnpm run fix`: Applies safe fixes, formatting, and lint fixes using `biome check --write`.
 - `pnpm run lint`: Applies automatic linter fixes using `biome lint --write`.
 - `pnpm run format`: Applies automatic formatting fixes using `biome format --write`.
-- `pnpm test`: Runs the Vitest integration test suite (`vitest run`) in a Node.js environment against packed artifacts.
+- `pnpm test`: Runs Vitest test suites (`vitest run`).
 
 ## 3. Development Guidelines
 
@@ -101,9 +138,9 @@ To prevent drift and obsolete instructions, do not hard-code or duplicate packag
 
 ### Development
 
-1. Edit configuration in `configs/recommended.json` or repository files as needed.
+1. Edit configuration in `configs/` or repository files as needed.
 2. Validate non-destructively using `pnpm run check`.
-3. Verify package artifact resolution using `pnpm test`.
+3. Verify test suites using `pnpm test`.
 4. Apply safe fixes if needed using `pnpm run fix`.
 
 ### Continuous Integration (CI)

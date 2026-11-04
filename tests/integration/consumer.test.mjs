@@ -74,13 +74,23 @@ describe("Biome package integration & compatibility matrix", () => {
     }
   });
 
-  it("verifies the published package tarball contents", () => {
+  it("verifies the published package tarball contains modular configs", () => {
     const res = runSync("tar", ["-tf", tarballPath], {
       timeout: TIMEOUT_LOCAL_OPS_MS,
     });
     const files = res.stdout.trim().split("\n");
     expect(files).toContain("package/biome-manifest.json");
     expect(files).toContain("package/configs/recommended.json");
+    expect(files).toContain("package/configs/base/files.json");
+    expect(files).toContain("package/configs/base/formatter.json");
+    expect(files).toContain("package/configs/base/linter.json");
+    expect(files).toContain("package/configs/languages/javascript.json");
+    expect(files).toContain("package/configs/languages/json.json");
+    expect(files).toContain("package/configs/languages/css.json");
+    expect(files).toContain("package/configs/languages/html.json");
+    expect(files).toContain("package/configs/languages/markdown.json");
+    expect(files).toContain("package/configs/languages/yaml.json");
+    expect(files).toContain("package/configs/languages/graphql.json");
     expect(files).toContain("package/package.json");
   });
 
@@ -194,11 +204,10 @@ describe("Biome package integration & compatibility matrix", () => {
         );
         expect(fs.existsSync(biomeBinPath)).toBe(true);
 
-        // Create standard source file
-        fs.writeFileSync(
-          path.join(consumerDir, "index.js"),
-          'export const message = "hello world";\n'
-        );
+        // Copy all test fixtures into consumer project
+        const fixturesSrc = path.join(repoRoot, "tests", "fixtures");
+        const fixturesDest = path.join(consumerDir, "fixtures");
+        fs.cpSync(fixturesSrc, fixturesDest, { recursive: true });
       }, 120_000);
 
       function runBiome(args, options = {}) {
@@ -224,25 +233,31 @@ describe("Biome package integration & compatibility matrix", () => {
 
         runBiome(["format", "--write", "."]);
         const output = runBiome(["ci", "."]);
-        expect(output).toMatch(/Checked 3 files/);
+        expect(output).toMatch(/Checked \d+ files/);
       });
 
-      it("excludes .github/ directory and nested files from Biome checks", () => {
+      it("processes .github/workflows/*.yml files without exclusion", () => {
         const githubWorkflowsDir = path.join(
           consumerDir,
           ".github",
           "workflows"
         );
         fs.mkdirSync(githubWorkflowsDir, { recursive: true });
-        // Place an unformatted YAML file with irregular spacing
         fs.writeFileSync(
           path.join(githubWorkflowsDir, "ci.yml"),
-          "name:   CI\non:   push\njobs:\n  test:\n    runs-on:   ubuntu-latest\n"
+          'name: "CI"\non:\n  push:\n    branches:\n      - "main"\njobs:\n  test:\n    runs-on: "ubuntu-latest"\n'
         );
 
-        // Biome should still report exactly 3 checked files (biome.json, index.js, package.json), completely skipping .github/
-        const output = runBiome(["ci", "."]);
-        expect(output).toMatch(/Checked 3 files/);
+        runBiome(["format", "--write", ".github/workflows/ci.yml"]);
+        const checkRes = runBiome(["check", ".github/workflows/ci.yml"]);
+        expect(checkRes).toMatch(/Checked 1 file/);
+      });
+
+      it("formats all language fixtures idempotently", () => {
+        runBiome(["format", "--write", "fixtures"]);
+        const formatPass2 = runBiome(["format", "fixtures"]);
+        // Should not have any changes to apply in second pass
+        expect(formatPass2).not.toMatch(/Formatter would have printed/);
       });
 
       it("rejects extending bare root path with expected manifest subpath error diagnostic", () => {
@@ -284,14 +299,20 @@ describe("Biome package integration & compatibility matrix", () => {
 
         const nestedDir = path.join(consumerDir, "nested");
         fs.mkdirSync(nestedDir, { recursive: true });
+        // Include one valid js file and excluded min.js/map files
+        fs.writeFileSync(
+          path.join(nestedDir, "valid.js"),
+          "export const x = 1;\n"
+        );
         fs.writeFileSync(
           path.join(nestedDir, "test.min.js"),
           "var a=1;var a=2;"
         );
         fs.writeFileSync(path.join(nestedDir, "test.map"), '{"version":3}');
 
-        const output = runBiome(["ci", "."]);
-        expect(output).toMatch(/Checked 3 files/);
+        const output = runBiome(["ci", "nested"]);
+        // Only valid.js should be checked, test.min.js and test.map should be excluded
+        expect(output).toMatch(/Checked 1 file/);
       });
     });
   }

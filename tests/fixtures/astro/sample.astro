@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<article class="post">
+  <h1>{title}</h1>
+  <p>Astro component content</p>
+</article>
+
+<style>
+  .post {
+    margin: 1rem 0;
+  }
+</style>

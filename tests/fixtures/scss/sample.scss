@@ -1,0 +1,10 @@
+// SCSS style variables and nesting
+$primary-color: #3490dc;
+
+.card {
+  background-color: $primary-color;
+
+  .card-body {
+    padding: 1rem;
+  }
+}
