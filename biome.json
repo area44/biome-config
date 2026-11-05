@@ -1,4 +1,12 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.6.5/schema.json",
-  "extends": ["./configs/recommended.json"]
+  "extends": ["./configs/recommended.json"],
+  "overrides": [
+    {
+      "includes": ["**/CHANGELOG.md"],
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
 }
