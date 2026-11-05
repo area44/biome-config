@@ -86,7 +86,7 @@ biome-config/
 - `configs/recommended.json`: Composed entry point extending base and language configurations.
 - `biome.json`: Repository configuration extending `./configs/recommended.json` with an explicit `$schema` matching the installed developer Biome version for contributor editor validation.
 - `tests/unit/`: Automated unit tests validating configuration structure, schema keys, and fixture idempotency.
-- `tests/integration/`: Automated integration tests (`vitest run`) validating real packed tarballs (`pnpm pack`) against isolated consumer projects across supported Biome versions (`2.6.2` minimum and `2.6.4` current).
+- `tests/integration/`: Automated integration tests (`vitest run`) validating real packed tarballs (`pnpm pack`) against isolated consumer projects across supported Biome versions (starting from minimum supported version `2.6.2` and newer compatible releases).
 - `package.json`: Package metadata, export condition (`biome`), file packaging list (`biome-manifest.json`, `configs`), peer dependencies, and script definitions.
 
 ### Package Scripts

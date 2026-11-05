@@ -14,7 +14,7 @@ Shared Biome configuration for AREA44 projects.
 
 ### Supported Biome Versions
 
-- Biome **v2.6.2** and later (`>=2.6.2 <3`).
+- Biome **v2.6.2** and later (`>=2.6.2`).
 - Verified against the minimum supported version (`2.6.2`) and newer compatible releases.
 
 ## Installation
