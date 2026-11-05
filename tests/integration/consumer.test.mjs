@@ -5,46 +5,68 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(".");
-// Dynamically resolve supported Biome versions within the major range (>=2.6.2 <3)
+const TIMEOUT_PACKAGE_OPS_MS = 45_000;
+const TIMEOUT_LOCAL_OPS_MS = 15_000;
+
+// Dynamically resolve supported Biome versions: minimum supported (2.6.2) and latest compatible release (<3) from registry
 function resolveSupportedBiomeVersions() {
   const minVersion = "2.6.2";
-  const versions = [minVersion];
 
-  try {
-    const installedBiomePkg = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          repoRoot,
-          "node_modules",
-          "@biomejs",
-          "biome",
-          "package.json"
-        ),
-        "utf8"
-      )
-    );
-    const resolvedVersion = installedBiomePkg.version;
-    // Ensure the newer resolved release is within the supported major (<3) and strictly newer than minVersion
-    if (
-      resolvedVersion &&
-      resolvedVersion !== minVersion &&
-      resolvedVersion.startsWith("2.")
-    ) {
-      versions.push(resolvedVersion);
+  // Query registry for latest compatible version within <3
+  const viewRes = spawnSync(
+    "pnpm",
+    ["view", "@biomejs/biome@<3", "version", "--json"],
+    {
+      cwd: repoRoot,
+      encoding: "utf8",
+      timeout: TIMEOUT_LOCAL_OPS_MS,
     }
-  } catch (err) {
-    console.warn(
-      `[Compatibility Diagnostic] Could not resolve newer Biome version from installed dependencies (${err.message}). Minimum supported version ${minVersion} will still be tested.`
+  );
+
+  if (viewRes.error || viewRes.status !== 0) {
+    const errorDetails = viewRes.error ? viewRes.error.message : viewRes.stderr;
+    throw new Error(
+      `[Compatibility Diagnostic] Failed to query registry for newer compatible Biome release within '<3': ${errorDetails}`
     );
   }
 
-  return versions;
+  let parsedVersions;
+  try {
+    parsedVersions = JSON.parse(viewRes.stdout);
+  } catch (err) {
+    throw new Error(
+      `[Compatibility Diagnostic] Failed to parse registry response for @biomejs/biome@<3: ${err.message}\nOutput: ${viewRes.stdout}`
+    );
+  }
+
+  const versionsList = Array.isArray(parsedVersions)
+    ? parsedVersions
+    : [parsedVersions];
+  const latestCompatibleVersion = versionsList[versionsList.length - 1];
+
+  if (!latestCompatibleVersion) {
+    throw new Error(
+      "[Compatibility Diagnostic] Registry returned empty version list for @biomejs/biome@<3."
+    );
+  }
+
+  // Ensure latestCompatibleVersion belongs to supported major (2.x) and is strictly newer than minVersion
+  if (!latestCompatibleVersion.startsWith("2.")) {
+    throw new Error(
+      `[Compatibility Diagnostic] Resolved Biome version ${latestCompatibleVersion} is outside the supported major 2.x.`
+    );
+  }
+
+  if (latestCompatibleVersion === minVersion) {
+    throw new Error(
+      `[Compatibility Diagnostic] Resolved latest compatible version is identical to minimum version (${minVersion}). A strictly newer release is required.`
+    );
+  }
+
+  return [minVersion, latestCompatibleVersion];
 }
 
 const supportedBiomeVersions = resolveSupportedBiomeVersions();
-
-const TIMEOUT_PACKAGE_OPS_MS = 45_000;
-const TIMEOUT_LOCAL_OPS_MS = 15_000;
 
 function runSync(command, args, options = {}) {
   const timeout = options.timeout ?? TIMEOUT_LOCAL_OPS_MS;
