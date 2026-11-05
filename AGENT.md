@@ -9,6 +9,7 @@ Practical guidance for AI coding agents and contributors working in this reposit
 ### Architectural Principle
 
 **Modular internally, unified externally**:
+
 - **Internal**: Configurations are decoupled by concern and language (`configs/base/`, `configs/languages/`), merged via `configs/recommended.json`.
 - **External**: Consumers extend the single preset entry point: `@area44/biome-config/configs/recommended`.
 
@@ -86,7 +87,7 @@ biome-config/
 - `configs/recommended.json`: Composed entry point extending base and language configurations.
 - `biome.json`: Repository configuration extending `./configs/recommended.json` with an explicit `$schema` matching the installed developer Biome version for contributor editor validation.
 - `tests/unit/`: Automated unit tests validating configuration structure, schema keys, and fixture idempotency.
-- `tests/integration/`: Automated integration tests (`vitest run`) validating real packed tarballs (`pnpm pack`) against isolated consumer projects across supported Biome versions (starting from minimum supported version `2.6.2` and newer compatible releases).
+- `tests/integration/`: Automated integration tests (`vitest run`) validating real packed tarballs (`pnpm pack`) against isolated consumer projects across supported Biome versions (starting from the minimum supported version and newer compatible releases within the supported major).
 - `package.json`: Package metadata, export condition (`biome`), file packaging list (`biome-manifest.json`, `configs`), peer dependencies, and script definitions.
 
 ### Package Scripts

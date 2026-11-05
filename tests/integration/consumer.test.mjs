@@ -5,8 +5,43 @@ import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const repoRoot = path.resolve(".");
-// Minimum supported Biome version and installed developer version for compatibility matrix
-const supportedBiomeVersions = ["2.6.2", "2.6.4"];
+// Dynamically resolve supported Biome versions within the major range (>=2.6.2 <3)
+function resolveSupportedBiomeVersions() {
+  const minVersion = "2.6.2";
+  const versions = [minVersion];
+
+  try {
+    const installedBiomePkg = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          repoRoot,
+          "node_modules",
+          "@biomejs",
+          "biome",
+          "package.json"
+        ),
+        "utf8"
+      )
+    );
+    const resolvedVersion = installedBiomePkg.version;
+    // Ensure the newer resolved release is within the supported major (<3) and strictly newer than minVersion
+    if (
+      resolvedVersion &&
+      resolvedVersion !== minVersion &&
+      resolvedVersion.startsWith("2.")
+    ) {
+      versions.push(resolvedVersion);
+    }
+  } catch (err) {
+    console.warn(
+      `[Compatibility Diagnostic] Could not resolve newer Biome version from installed dependencies (${err.message}). Minimum supported version ${minVersion} will still be tested.`
+    );
+  }
+
+  return versions;
+}
+
+const supportedBiomeVersions = resolveSupportedBiomeVersions();
 
 const TIMEOUT_PACKAGE_OPS_MS = 45_000;
 const TIMEOUT_LOCAL_OPS_MS = 15_000;

@@ -202,8 +202,19 @@ const unusedVar = 100;
       );
 
       try {
-        const res = runBiome(["lint", vueFile]);
-        expect(res.stdout + res.stderr).toMatch(/noUnusedVariables/);
+        const res = runBiome(["lint", "--error-on-warnings", vueFile]);
+        const output = res.stdout + res.stderr;
+
+        // Biome must exit with non-zero status
+        expect(res.status).toBe(1);
+        // Diagnostic must belong to Test.vue
+        expect(output).toContain("Test.vue");
+        // Exact rule must be reported
+        expect(output).toContain("noUnusedVariables");
+        // Diagnostic must identify the specific unused variable
+        expect(output).toContain("unusedVar");
+        // Must not be caused by parse errors
+        expect(output).not.toMatch(/parse/i);
       } finally {
         fs.rmSync(subDir, { recursive: true, force: true });
       }
@@ -224,8 +235,19 @@ const unusedVar = 100;
       );
 
       try {
-        const res = runBiome(["lint", svelteFile]);
-        expect(res.stdout + res.stderr).toMatch(/noUnusedVariables/);
+        const res = runBiome(["lint", "--error-on-warnings", svelteFile]);
+        const output = res.stdout + res.stderr;
+
+        // Biome must exit with non-zero status
+        expect(res.status).toBe(1);
+        // Diagnostic must belong to Test.svelte
+        expect(output).toContain("Test.svelte");
+        // Exact rule must be reported
+        expect(output).toContain("noUnusedVariables");
+        // Diagnostic must identify the specific unused variable
+        expect(output).toContain("unusedVar");
+        // Must not be caused by parse errors
+        expect(output).not.toMatch(/parse/i);
       } finally {
         fs.rmSync(subDir, { recursive: true, force: true });
       }
@@ -249,8 +271,19 @@ const title = "Hello";
       );
 
       try {
-        const res = runBiome(["lint", astroFile]);
-        expect(res.stdout + res.stderr).toMatch(/noUnusedImports/);
+        const res = runBiome(["lint", "--error-on-warnings", astroFile]);
+        const output = res.stdout + res.stderr;
+
+        // Biome must exit with non-zero status
+        expect(res.status).toBe(1);
+        // Diagnostic must belong to Test.astro
+        expect(output).toContain("Test.astro");
+        // Exact rule must be reported
+        expect(output).toContain("noUnusedImports");
+        // Diagnostic must identify the specific unused import
+        expect(output).toContain("UnusedComponent");
+        // Must not be caused by parse errors
+        expect(output).not.toMatch(/parse/i);
       } finally {
         fs.rmSync(subDir, { recursive: true, force: true });
       }
