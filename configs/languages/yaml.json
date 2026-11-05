@@ -1,0 +1,9 @@
+{
+  "yaml": {
+    "formatter": {
+      "bracketSpacing": true,
+      "enabled": true,
+      "quoteStyle": "double"
+    }
+  }
+}

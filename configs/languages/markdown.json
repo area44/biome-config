@@ -1,0 +1,14 @@
+{
+  "markdown": {
+    "formatter": {
+      "enabled": true,
+      "formatEmbeds": true,
+      "proseWrap": "preserve"
+    },
+    "parser": {
+      "cjkFriendlyEmphasis": true,
+      "frontmatter": true,
+      "gfm": true
+    }
+  }
+}

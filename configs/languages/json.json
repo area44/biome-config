@@ -1,0 +1,9 @@
+{
+  "json": {
+    "formatter": {
+      "bracketSpacing": true,
+      "enabled": true,
+      "trailingCommas": "none"
+    }
+  }
+}

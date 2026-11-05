@@ -1,0 +1,12 @@
+{
+  "html": {
+    "experimentalFullSupportEnabled": true,
+    "formatter": {
+      "bracketSameLine": false,
+      "enabled": true,
+      "indentScriptAndStyle": true,
+      "selfCloseVoidElements": "never",
+      "whitespaceSensitivity": "css"
+    }
+  }
+}
