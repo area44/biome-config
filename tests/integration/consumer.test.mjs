@@ -178,11 +178,38 @@ describe("Biome package integration test suite", () => {
         timeout: TIMEOUT_LOCAL_OPS_MS,
       });
 
-      // Install the packed package artifact and devDependencies Biome version
-      runSync("pnpm", ["add", tarballPath, "@biomejs/biome"], {
-        cwd: consumerDir,
-        timeout: TIMEOUT_PACKAGE_OPS_MS,
-      });
+      // Read and validate the installed Biome version from repo devDependencies
+      const installedBiomePkgPath = path.join(
+        repoRoot,
+        "node_modules",
+        "@biomejs",
+        "biome",
+        "package.json"
+      );
+      if (!fs.existsSync(installedBiomePkgPath)) {
+        throw new Error(
+          `Failed to locate installed Biome package metadata at ${installedBiomePkgPath}. Ensure dependencies are installed.`
+        );
+      }
+      const installedBiomePkg = JSON.parse(
+        fs.readFileSync(installedBiomePkgPath, "utf8")
+      );
+      const installedBiomeVersion = installedBiomePkg.version;
+      if (!installedBiomeVersion || typeof installedBiomeVersion !== "string") {
+        throw new Error(
+          `Invalid or missing version in installed Biome package metadata: ${JSON.stringify(installedBiomePkg)}`
+        );
+      }
+
+      // Install the packed package artifact and exact installed Biome version
+      runSync(
+        "pnpm",
+        ["add", tarballPath, `@biomejs/biome@${installedBiomeVersion}`],
+        {
+          cwd: consumerDir,
+          timeout: TIMEOUT_PACKAGE_OPS_MS,
+        }
+      );
 
       biomeBinPath = path.join(
         consumerDir,
