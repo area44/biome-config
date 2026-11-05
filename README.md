@@ -15,7 +15,6 @@ Shared Biome configuration for AREA44 projects.
 ### Supported Biome Versions
 
 - Biome **v2.6.2** and later (`>=2.6.2 <3`).
-- Verified against the minimum supported version (`2.6.2`) and newer compatible releases within the supported major.
 
 ## Installation
 
@@ -141,7 +140,7 @@ biome-config/
 - `pnpm run fix`: Applies safe fixes and formatting (`biome check --write`).
 - `pnpm run lint`: Applies automatic linter fixes (`biome lint --write`).
 - `pnpm run format`: Applies automatic formatting fixes (`biome format --write`).
-- `pnpm test`: Runs Vitest test suite (`vitest run`), validating unit tests, fixture integrity, and package integration matrix.
+- `pnpm test`: Runs Vitest test suite (`vitest run`), validating unit tests, fixture integrity, and consumer integration tests.
 
 ## License
 
