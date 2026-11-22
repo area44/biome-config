@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.1.1](https://github.com/area44/biome-config/compare/biome-config-v3.1.0...biome-config-v3.1.1) (2026-11-22)
+
+
+### Miscellaneous Chores
+
+* **deps:** lock file maintenance ([#123](https://github.com/area44/biome-config/issues/123)) ([b39385c](https://github.com/area44/biome-config/commit/b39385c07c9d598d54490ac7f46f0e6cda63d23a))
+* **deps:** lock file maintenance ([#126](https://github.com/area44/biome-config/issues/126)) ([f7afa98](https://github.com/area44/biome-config/commit/f7afa98b853712ff15fcc6e8744ec7c728730c4e))
+* **deps:** lock file maintenance ([#129](https://github.com/area44/biome-config/issues/129)) ([f72b446](https://github.com/area44/biome-config/commit/f72b446bc85662c288e42e6c671e5228b7980f9c))
+* **deps:** update all non-major dependencies ([#122](https://github.com/area44/biome-config/issues/122)) ([03083f4](https://github.com/area44/biome-config/commit/03083f43d2d85c933959f0729f412103af99a795))
+* **deps:** update all non-major dependencies ([#125](https://github.com/area44/biome-config/issues/125)) ([9cf40d6](https://github.com/area44/biome-config/commit/9cf40d60010aa556fd012ed8208a9f0fabb50553))
+* **deps:** update dependency @biomejs/biome to v2.6.8 ([#127](https://github.com/area44/biome-config/issues/127)) ([48f0df4](https://github.com/area44/biome-config/commit/48f0df46a0e5dc09bfd662311c4afed647413d34))
+* **deps:** update dependency vitest to ^5.1.1 ([#128](https://github.com/area44/biome-config/issues/128)) ([e90ce2e](https://github.com/area44/biome-config/commit/e90ce2ee936918095bc7a53eb5d9aad5325780e5))
+
 ## [3.1.0](https://github.com/area44/biome-config/compare/biome-config-v3.0.0...biome-config-v3.1.0) (2026-11-06)
 
 
