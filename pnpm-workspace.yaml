@@ -1,5 +1,7 @@
 autoDedupe: true
 minimumReleaseAge: 0
+lockfile:
+  includeResolutionSettings: true
 shellEmulator: true
 trustLockfile: true
 trustPolicy: no-downgrade
