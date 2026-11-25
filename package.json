@@ -43,8 +43,8 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.8",
-    "vitest": "^5.1.1"
+    "@biomejs/biome": "^2.6.9",
+    "vitest": "^5.1.2"
   },
-  "packageManager": "pnpm@12.21.0"
+  "packageManager": "pnpm@12.23.0"
 }
