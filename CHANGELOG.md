@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.2](https://github.com/area44/biome-config/compare/biome-config-v3.1.1...biome-config-v3.1.2) (2026-11-26)
+
+
+### Miscellaneous Chores
+
+* **deps:** update all non-major dependencies ([#133](https://github.com/area44/biome-config/issues/133)) ([511507d](https://github.com/area44/biome-config/commit/511507df38d140f589f2fa6ae915a1039e3b0b35))
+* **deps:** update area44/workflows action to v10.1.0 ([#130](https://github.com/area44/biome-config/issues/130)) ([d5d822d](https://github.com/area44/biome-config/commit/d5d822d405d41055dd58c2c4de47f85beb8283fd))
+* **deps:** update area44/workflows action to v10.1.1 ([#132](https://github.com/area44/biome-config/issues/132)) ([cf8a351](https://github.com/area44/biome-config/commit/cf8a351b34021df5029fbe26ecde40920975713a))
+
 ## [3.1.1](https://github.com/area44/biome-config/compare/biome-config-v3.1.0...biome-config-v3.1.1) (2026-11-22)
 
 
